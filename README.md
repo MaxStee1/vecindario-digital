@@ -83,10 +83,10 @@ npm start
 ```
 http://localhost:3000
 ```
-(backend)
+(backend) pruebas de api
+```
 http://localhost:3001
----
-
+```
 ## 👤 Usuarios de Prueba
 
 | Rol       | Email                    | Contraseña |
