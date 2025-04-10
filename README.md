@@ -79,11 +79,12 @@ npm start
 
 ### 6. Accede a la app
 
-Abre tu navegador y entra a:
+(frontend) Abre tu navegador y entra a:
 ```
-http://localhost:5173
+http://localhost:3000
 ```
-
+(backend)
+http://localhost:3001
 ---
 
 ## 👤 Usuarios de Prueba
