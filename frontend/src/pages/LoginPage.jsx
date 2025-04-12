@@ -20,9 +20,22 @@ const LoginPage = () => {
                 password,
             });
             // Guardar el token en el localStorage
+            const token = response.data.token;
             localStorage.setItem("token", response.data.token);
-            
-            navigate("/")
+
+            const payload = JSON.parse(atob(token.split('.')[1]));
+        const role = payload.role;
+
+        // Redirigir según el rol
+        if (role === "ADMIN") {
+            navigate("/admin");
+        } else if (role === "LOCATARIO") {
+            navigate("/locatario");
+        } else if (role === "COMPRADOR") {
+            navigate("/comprador");
+        } else {
+            navigate("/"); // Redirigir a una página por defecto
+        }
         } catch (err) {
             setError("Credenciales incorrectas. Por favor, intente de nuevo.");
         }  
@@ -30,31 +43,35 @@ const LoginPage = () => {
 
     return (
         <div>
-            <h2>Iniciar Sesion</h2>
+            <header>
+                <h2>Iniciar Sesion</h2>
+            </header>
             {error && <p style={{ color: "red" }}>{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="email">Email</label>
-                    <input 
-                        type="email" 
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Contraseña</label>
-                    <input 
-                        type="password" 
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit">Iniciar Sesion</button>
-            </form>
+            <div id="login-form">
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <label htmlFor="email">Email</label>
+                        <input 
+                            type="email" 
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="password">Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <button type="submit">Iniciar Sesion</button>
+                </form>
+            </div>
         </div>
     );
 };
