@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int         @id @default(autoincrement())
+  firstName  String
+  lastName   String
+  email      String      @unique
+  password   String        
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  userRoles  UserRole[]     
+  locatario  Locatario?
+}
+
+model Role {
+  id    Int      @id @default(autoincrement())
+  name  String   @unique
+  users UserRole[]                     
+}
+
+model UserRole {
+  user    User  @relation(fields: [userId], references: [id])
+  userId  Int
+  role    Role  @relation(fields: [roleId], references: [id])
+  roleId  Int
+  assignedAt DateTime @default(now())
+  @@id([userId, roleId])              
+}
+
+model Locatario {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int       @unique
+  storeName   String
+  address     String
+  phone       String?
+  products    Product[]
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  name        String
+  price       Float
+  description String
+  locatarioId Int
+  locatario   Locatario  @relation(fields: [locatarioId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+

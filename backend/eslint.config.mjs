@@ -26,6 +26,14 @@ export default tseslint.config(
   },
   {
     rules: {
+      "prettier/prettier": [
+        "error",
+        {
+          "singleQuote": true,
+          "parser": "flow",
+          "usePrettierrc": false
+        }
+      ],
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn'
