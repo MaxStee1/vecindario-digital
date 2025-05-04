@@ -1,12 +1,20 @@
 import * as bcrypt from 'bcrypt';
 
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
+  try {
+    return await bcrypt.hash(password, 10);
+  } catch {
+    throw new Error('Error al encriptar la contraseña');
+  }
 }
 
 export async function comparePasswords(
   password: string,
   hash: string,
 ): Promise<boolean> {
-  return bcrypt.compare(password, hash);
+  try {
+    return bcrypt.compare(password, hash);
+  } catch {
+    throw new Error('Error al comparar las contraseñas');
+  }
 }

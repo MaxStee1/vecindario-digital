@@ -46,7 +46,7 @@ Relaciones importantes:
 4. Aplica las migraciones y genera el cliente Prisma:
    ```bash
    npx prisma migrate dev --name init
-   npx prisma generat
+   npx prisma generate
 5. Agrega los datos de prueba
    ```bash
    npm run seed
@@ -79,26 +79,6 @@ Se usa JWT para proteger rutas. Para acceder a rutas protegidas, es necesario:
 
    para el registro se necesita: firstName, lastName, email, password
 
-<<<<<<< HEAD
-### 4. Inicializa la base de datos
-
-#### 4.1 Ejecuta migraciones con Prisma
-```bash
-cd backend
-npx prisma migrate dev --name init
-```
-
-#### 4.2 Llena la base de datos con datos de prueba
-```bash
-npm run seed
-```
-
-### 5. Inicia los servidores
-
-#### Backend
-```bash
-npm run dev
-```
 
 #### Frontend
 En otra terminal:
@@ -158,11 +138,6 @@ root/
 ## 📌 Notas
 
 ---
-=======
-2. Hacer login (/auth/login)
-     
-   para el login se necesita: email, password 
->>>>>>> backend
 
 3. Usar el token JWT en el header:
   ```makefile
