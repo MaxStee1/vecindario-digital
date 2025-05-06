@@ -1,42 +1,115 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model Usuario {
+  id           Int       @id @default(autoincrement())
+  nombre       String
+  email        String    @unique
+  contrasenia  String
+  rol          Rol
+  direccion    String?
+  telefono     String?
+  CreatedAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  locatario Locatario?
+  comprador Comprador?
+  }
+
+model Locatario {
+  id        Int     @id @default(autoincrement())
+  usuarioId Int     @unique
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  nombreTienda  String
+  descripcion   String?
+  direccionTienda String
+  horarioApertura String?
+  horarioCierre   String?
+  puntajeVisibilidad  Int   @default(100)
+  fechaRegistro   DateTime  @default(now())
+  metodosEntrega   MetodoEntrega[]
+
+  productos   Producto[]
+  //proveedores Proveedor[]
+  valoraciones  Valoracion[]
+  pedidos       Pedido[]
 }
 
-model User {
-  id        Int     @id @default(autoincrement()) 
-  email     String  @unique
-  name      String
-  password  String
-  role      Role
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  products  Product[]
+model Comprador {
+  id      Int   @id @default(autoincrement())
+  usuarioId Int @unique
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id])
+  direccionEntrega String?
+
+  pedidos   Pedido[]
+  valoraciones  Valoracion[]
 }
 
-enum Role {
-  ADMIN
-  LOCATARIO
-  COMPRADOR
-  REPARTIDOR
+model Producto {
+  id            Int       @id @default(autoincrement())
+  nombre        String
+  descripcion   String?
+  precio        Decimal    @db.Decimal(10, 2)
+  stock         Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  locaratio     Locatario   @relation(fields: [locatarioId], references: [id])
+  locatarioId   Int
 }
 
-model Product {
-  id          Int     @id @default(autoincrement())
-  name        String
-  description String
-  price       Int
-  user        User    @relation(fields: [userId], references: [id])
-  userId      Int
+model Pedido {
+  id    Int   @id @default(autoincrement())
+  compradorId   Int
+  comprador     Comprador @relation(fields: [compradorId], references: [id])
+  locatarioId   Int
+  locatario     Locatario @relation(fields: [locatarioId], references: [id])
+  direccionEntrega  String?
+  fechaPedido   DateTime  @default(now())
+  fechaEntrega  DateTime
+  estado        EstadoPedido
+  metodoEntrega MetodoEntrega
+  total         Int
+  notas         String?
+
+
+  Valoracion Valoracion[]
+}
+
+model Valoracion {
+  id      Int   @id @default(autoincrement())
+  comprador   Comprador   @relation(fields: [compradorId], references: [id])
+  compradorId Int
+  locatario   Locatario   @relation(fields: [locatarioId], references: [id])
+  locatarioId Int
+  pedido      Pedido?     @relation(fields: [pedidoId], references: [id])
+  pedidoId    Int?
+  calificacion    Int
+  comentario    String?
+  fecha     DateTime    @default(now()) 
+  tipoEntrega   MetodoEntrega   
+}
+
+enum Rol {
+  admin
+  locatario
+  comprador
+  repartidor
+}
+
+enum MetodoEntrega {
+  envio
+  retiro
+}
+
+enum EstadoPedido {
+  pendiente
+  enviado
+  entregado
+  cancelado
 }
