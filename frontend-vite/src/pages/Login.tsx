@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { decodeToken } from "../utils/auth";
 
 function Login() {
     const navigate = useNavigate();
@@ -17,17 +18,24 @@ function Login() {
                 password,
             });
             const token = response.data.token;
-            const role = response.data.user.rol;
             localStorage.setItem("token", token);
             
-            // redirigir segun rol
-            if(role === "admin"){
-                navigate("/admin");
-            } else if(role === "locatario"){
-                navigate("/locatario")
-            } else {
-                navigate("/");
+            const user = decodeToken(response.data.token);
+
+            switch(user.rol) {
+                case 'admin':
+                    navigate('/admin')
+                    break;
+                case 'locatario':
+                    navigate('/locatario')
+                    break;
+                case 'comprador':
+                    navigate('/comprador')
+                    break;
+                default:
+                    navigate("/")
             }
+            
         } catch (err) {
             console.error(err);
             setError("Credenciales invalidas");
