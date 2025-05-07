@@ -119,7 +119,7 @@ const AdminPage = () => {
                 </div>
             </main>
             
-            <footer>
+            <footer style={{ placeItems:'center', padding:"1rem"}} >
                 <LogoutButton />
                 <p>&copy; {new Date().getFullYear()} Comercio Digital y Local</p>
                 <p>Todos los derechos reservados</p>

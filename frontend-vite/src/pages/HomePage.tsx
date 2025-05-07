@@ -4,7 +4,7 @@ const HomePage = () => {
     const navigate = useNavigate();
 
     return (
-        <div>
+        <div style={{textAlign:"center"}}>
             <header>
                 <h1>Comercio Digita y Local</h1>
                 <p>Compra y vende todo lo que quieras dentro de tu comunidad</p>
@@ -25,7 +25,7 @@ const HomePage = () => {
                     <button onClick={() => navigate("/register")}>Registrarse</button>
                 </div>
             </main>
-            <footer>
+            <footer style={{ placeItems:'center', padding:"5rem"}} >
                 <p>&copy; 2023 Comercio Digital y Local. Todos los derechos reservados.</p>
                 <p>Desarrollado por <strong>Run mafia</strong></p>
             </footer>

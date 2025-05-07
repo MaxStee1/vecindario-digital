@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { decodeToken } from "../utils/auth";
+import '../styles/login.css';
 
 function Login() {
     const navigate = useNavigate();
@@ -42,30 +43,30 @@ function Login() {
         }
     }
     return (
-        <div>
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <div>
-                    <label>Email:</label>
-                    <input 
+        <div className="login-body">
+            <h2 id="login-tittle">Login</h2>
+            <form className="login-form" onSubmit={handleLogin}>
+                <div className="login-section">
+                    <label className="login-label">EMAIL</label>
+                    <input className="login-input"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
                 </div>
-                <div>
-                    <label>Password:</label>
-                    <input
+                <div className="login-section">
+                    <label className="login-label">PASSWORD</label>
+                    <input className="login-input"
                         type="password" 
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                 </div>
-                <button>Login</button>
+                <button className="login-button">Iniciar Sesion</button>
             </form>
-            {error && <p>{error}</p>}
+            {error && <p className="login-error">{error}</p>}
         </div>
     );
 }
