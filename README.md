@@ -84,7 +84,7 @@ Se usa JWT para proteger rutas. Para acceder a rutas protegidas, es necesario:
 En otra terminal:
 ```bash
 cd frontend
-npm start
+npm run dev
 ```
 
 ### 6. Accede a la app
@@ -102,8 +102,7 @@ http://localhost:3001
 | Rol       | Email                    | Contraseña |
 |-----------|--------------------------|------------|
 | ADMIN     | admin@admin.com          | password   |
-| LOCATARIO | locatario@example.com    | password   |
-| COMPRADOR | comprador@example.com    | password   |
+| LOCATARIO | max@gmail.com            | password   |
 
 ---
 

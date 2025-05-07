@@ -73,20 +73,54 @@ const LocatarioPage = () => {
 
     const addProducto = async () => {
         const token = localStorage.getItem("token");
+    
+        // Verifica que los campos obligatorios estén completos
+        if (!newProducto.nombre || newProducto.precio <= 0 || newProducto.stock < 0) {
+            alert("Por favor, completa todos los campos obligatorios correctamente.");
+            return;
+        }
+    
+        // Crea un objeto sin el campo `id`
+        const productoData = {
+            nombre: newProducto.nombre,
+            descripcion: newProducto.descripcion,
+            precio: newProducto.precio,
+            stock: newProducto.stock,
+        };
+    
+        console.log("Producto a agregar:", productoData); // Verifica los datos enviados
+    
         try {
-            const response = await axios.post("http://localhost:3001/locatarios/productos", newProducto, {
+            const response = await axios.post("http://localhost:3001/locatarios/productos", productoData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
             alert("Producto agregado correctamente.");
             setAddDialogVisible(false);
+    
+            // Actualiza la lista de productos con el nuevo producto
             setProductos((prev) => [...prev, response.data]);
-        } catch (error) {
-            console.error("Error al agregar el producto", error);
+    
+            // Resetea el formulario
+            setNewProducto({
+                id: 0,
+                nombre: "",
+                descripcion: "",
+                precio: 0,
+                stock: 0,
+            });
+        } catch (error: any) {
+            console.error("Error al agregar el producto:", error);
+    
+            // Muestra un mensaje de error más detallado si está disponible
+            if (error.response && error.response.data && error.response.data.message) {
+                alert(`Error: ${error.response.data.message}`);
+            } else {
+                alert("Hubo un problema al agregar el producto.");
+            }
         }
     };
-
     //falta crear el servicio en el backend para eliminar el producto
     // y agregar la ruta en el controller
     // y el servicio en el locatario.service.ts
@@ -114,7 +148,7 @@ const LocatarioPage = () => {
                 label="Agregar Producto"
                 onClick={() => setAddDialogVisible(true)}
                 className="p-button-success"
-                style={{ marginBottom: "10px" }}
+                style={{ marginBottom: "50px" }}
             />
             <DataTable value={productos} paginator rows={10} rowsPerPageOptions={[5, 10, 20]}>
                 <Column field="id" header="ID" />
@@ -143,7 +177,7 @@ const LocatarioPage = () => {
             </DataTable>
 
             {/* Dialogo para agregar producto */}
-            <Dialog
+                        <Dialog
                 header="Agregar Producto"
                 visible={addDialogVisible}
                 onHide={() => setAddDialogVisible(false)}
@@ -172,13 +206,13 @@ const LocatarioPage = () => {
                         />
                     </div>
                     <div className="p-field">
-                    <label htmlFor="precio">Precio</label>
-                    <InputText
-                        id="precio"
-                        type="number"
-                        value={newProducto.precio.toString()}
-                        onChange={(e) => setNewProducto({ ...newProducto, precio: parseFloat(e.target.value) || 0 })}
-                    />
+                        <label htmlFor="precio">Precio</label>
+                        <InputText
+                            id="precio"
+                            type="number"
+                            value={newProducto.precio.toString()}
+                            onChange={(e) => setNewProducto({ ...newProducto, precio: parseFloat(e.target.value) || 0 })}
+                        />
                     </div>
                     <div className="p-field">
                         <label htmlFor="stock">Stock</label>
