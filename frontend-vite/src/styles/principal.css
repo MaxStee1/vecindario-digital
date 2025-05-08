@@ -1,0 +1,113 @@
+/* Estilos generales */
+.principal-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+.principal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filtros-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid de productos */
+.productos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.producto-card {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.producto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.producto-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stock-tag {
+    align-self: flex-start;
+}
+
+.producto-descripcion {
+    color: #666;
+    margin: 0.5rem 0;
+}
+
+.producto-detalle {
+    padding: 1rem;
+    margin-top: 1rem;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    border-left: 4px solid #6366f1;
+}
+
+
+/* Footer */
+.principal-footer {
+    margin-top: auto;
+    padding: 1rem;
+    text-align: center;
+    background-color: #2c3e50;
+    color: white;
+    border-radius: 8px;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-column: 1 / -1;
+    height: 200px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .productos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+.producto-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 80%;
+}
+
+.input-container {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    max-width: 250px;
+}

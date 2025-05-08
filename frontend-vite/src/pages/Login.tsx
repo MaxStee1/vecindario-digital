@@ -31,7 +31,7 @@ function Login() {
                     navigate('/locatario')
                     break;
                 case 'comprador':
-                    navigate('/comprador')
+                    navigate('/shop')
                     break;
                 default:
                     navigate("/")
