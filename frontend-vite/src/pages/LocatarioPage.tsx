@@ -22,6 +22,8 @@ const LocatarioPage = () => {
         precio: 0,
         stock: 0,
     });
+    const [locatarioNombre, setLocatarioNombre] = useState<string>('');
+    const [NombreTienda, setNombreTienda] = useState<string>('');
     const toast = useRef<Toast>(null);
 
     const categorias = [
@@ -38,6 +40,7 @@ const LocatarioPage = () => {
 
     useEffect(() => {
         fetchProductos();
+        obtenerLocatario();
     }, []);
 
     const fetchProductos = async () => {
@@ -48,6 +51,7 @@ const LocatarioPage = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            console.log("data", response.data);
             setProductos(response.data);
         } catch (error) {
             console.error("Error al obtener productos", error);
@@ -139,12 +143,28 @@ const LocatarioPage = () => {
         toast.current?.show({severity:'error', summary: 'Error', detail: message, life: 3000});
     };
 
+    const obtenerLocatario = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get("http://localhost:3001/locatarios/info", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setLocatarioNombre(response.data.usuario.nombre);
+            setNombreTienda(response.data.nombreTienda);
+        } catch (error) {
+            console.error("Error al obtener la información del locatario", error);
+            showError("Hubo un problema al cargar la información del locatario.");
+        }
+    }
     
     return (
         <div>
             <Toast ref={toast} />
             <header>
-                <h2>Panel de Locatario</h2>
+                <h2 style={{padding:"1rem", textAlign:"center"}}>Administracion de productos de <strong>{NombreTienda}</strong></h2>
+                <h3 style={{padding:"1rem", textAlign:"center"}}>Bienvenido, {locatarioNombre}</h3>
             </header>
             <main className="locatarioMain" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                 {/* Seccion de productos */}
@@ -167,9 +187,9 @@ const LocatarioPage = () => {
                         marginBottom: "20px",
                     }}
                 >
-                    <DataTable value={productos} tableStyle={{ minWidth: "auto", alignItems: "center" }}>
-                        <Column field="id" header="ID"></Column>
-                        <Column field="nombre" header="Nombre"></Column>
+                    <DataTable value={productos} tableStyle={{ minWidth: "auto", alignItems: "center" }} style={{ borderRadius: "10px" }}> 
+                        <Column field="id" header="ID" sortable></Column>
+                        <Column field="nombre" header="Nombre" sortable></Column>
                         <Column field="descripcion" header="Descripcion"></Column>
                         <Column field="precio" header="Precio" body={(rowData) => `$${rowData.precio}`}></Column>
                         <Column field="stock" header="Stock"></Column>

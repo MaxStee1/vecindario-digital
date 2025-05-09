@@ -6,32 +6,32 @@ import { Roles } from 'src/auth/roles.decorator';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 
-@Controller('locatarios/productos')
+@Controller('locatarios')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('locatario')
 export class LocatariosController {
   constructor(private locatariosService: LocatariosService) {}
 
   // Crear Producto
-  @Post()
+  @Post('productos')
   createProduct(@Req() req, @Body() dto: CreateProductoDto) {
     return this.locatariosService.createProduct(req.user.userId, dto);
   }
 
   // listar Productos del locatario
-  @Get()
+  @Get('productos')
   getProducts(@Req() req) {
     return this.locatariosService.getLocatarioProducts(req.user.userId);
   }
 
   // Obtener un producto por ID
-  @Get(':id')
+  @Get('productos/:id')
   getProductById(@Req() req, @Param('id') productId: string) {
     return this.locatariosService.getProductById(req.user.userId, Number(productId)); 
   }
 
   // Actualizar Producto
-  @Put(':id')
+  @Put('productos/:id')
   updateProduct(
     @Req() req,
     @Param('id') productId: string,
@@ -44,12 +44,18 @@ export class LocatariosController {
     );
   }
 
-  @Delete(':id')
+  @Delete('productos/:id')
   deleteProduct(@Req() req, @Param('id') productId: string) {
     return this.locatariosService.deleteProduct(
       req.user.userId,
       Number(productId),
     );
+  }
+
+  // obtener informacion del locatario a traves de id de usuario
+  @Get('info')
+  getLocatarioInfo(@Req() req) {
+    return this.locatariosService.getLocatarioInfo(req.user.userId);
   }
 
 }

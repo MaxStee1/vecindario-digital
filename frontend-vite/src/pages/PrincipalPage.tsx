@@ -128,8 +128,8 @@ const PrincipalPage = () => {
         <div className="principal-container">
             <Toast ref={toast} />
             
-            <header className="principal-header" style={{backgroundColor:"rgba(10% 10% 10% / 1)"}}>
-                <h1>Bienvenido, {localStorage.getItem('nombreUsuario') || 'Comprador'}</h1>
+            <header className="principal-header">
+                <h1>Bienvenido</h1>
                 <Button 
                     label={`Carrito (${totalItemsCarrito})`}
                     icon="pi pi-shopping-cart"
@@ -138,6 +138,15 @@ const PrincipalPage = () => {
                     disabled={totalItemsCarrito === 0}
                 />
             </header>
+            <hr
+                    style={{
+                        border: "none",
+                        height: "2px",
+                        backgroundColor: "#ff6600", // Línea naranja
+                        marginBottom: "20px",
+                        width: "80%", // Línea que ocupa todo el ancho
+                    }}
+                />
 
             <div className="productos-grid">
                 {loading ? (

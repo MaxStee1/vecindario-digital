@@ -55,6 +55,28 @@ export class AuthService {
       },
     });
 
+    switch (dto.rol) {
+      case 'locatario':
+        await this.prisma.locatario.create({
+          data: {
+            usuarioId: user.id,
+            nombreTienda: "Tienda de" + dto.nombre,
+            direccionTienda: "sin direccion",
+          },
+        });
+        break;
+      case 'comprador':
+        await this.prisma.comprador.create({
+          data: {
+            usuarioId: user.id,
+            direccionEntrega: "sin direccion",
+          },
+        });
+        break;
+      default:
+        throw new UnauthorizedException('Rol no valido');
+    }
+
     // generar token JWT
     const token = this.jwtService.sign({
       id: user.id,

@@ -65,6 +65,16 @@ export class LocatariosService {
     });
   }
 
+  async getLocatarioInfo(userId: number) {
+    const locatario = await this.prisma.locatario.findUnique({
+      where: { usuarioId: userId },
+      include: { usuario: true },
+    });
+
+    if (!locatario) throw new NotFoundException('locatario no encontrado');
+    return locatario;
+  }
+
   private async ValidateProductOwnership(userId: number, productId: number) {
     const product = await this.prisma.producto.findFirst({
       where: {

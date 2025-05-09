@@ -20,7 +20,7 @@ model Usuario {
 
   locatario Locatario?
   comprador Comprador?
-  }
+}
 
 model Locatario {
   id        Int     @id @default(autoincrement())

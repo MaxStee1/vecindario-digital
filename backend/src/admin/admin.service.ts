@@ -40,7 +40,11 @@ export class AdminService {
   async updateUser(userId: number, data: { nombre?: string; direccion?: string }) {
     return this.prisma.usuario.update({
         where: { id: userId },
-        data,
+        data: {
+            nombre: data.nombre,
+            direccion: data.direccion,
+            updatedAt: new Date(),
+        }
     });
   }
 
