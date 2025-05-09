@@ -1,0 +1,118 @@
+/*
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id           Int       @id @default(autoincrement())
+  nombre       String
+  email        String    @unique
+  contraseña   String
+  rol          Rol
+  direccion    String?
+  telefono     String?
+  fechaCreacion DateTime @default(now())
+
+  productos    Producto[]      @relation("LocatarioProductos")
+  compras      Compra[]        @relation("CompradorCompras")
+  valoracionesHechas  Valoracion[] @relation("CompradorValoraciones")
+  valoracionesRecibidas Valoracion[] @relation("LocatarioValoraciones")
+  envios       Envio[]         @relation("RepartidorEnvios")
+}
+
+model Producto {
+  id            Int       @id @default(autoincrement())
+  nombre        String
+  descripcion   String?
+  precio        Decimal    @db.Decimal(10, 2)
+  stock         Int
+  metodoEntrega MetodoEntrega
+  activo        Boolean    @default(true)
+  fechaCreacion DateTime   @default(now())
+  locatario     Usuario    @relation("LocatarioProductos", fields: [locatarioId], references: [id])
+  locatarioId   Int
+
+  detallesCompra DetalleCompra[]
+}
+
+model Compra {
+  id               Int       @id @default(autoincrement())
+  fecha            DateTime  @default(now())
+  total            Decimal   @db.Decimal(10, 2)
+  estado           EstadoCompra
+  direccionEntrega String?
+  comprador        Usuario   @relation("CompradorCompras", fields: [compradorId], references: [id])
+  compradorId      Int
+
+  detalles         DetalleCompra[]
+  envio            Envio?
+}
+
+model DetalleCompra {
+  id         Int       @id @default(autoincrement())
+  cantidad   Int
+  precioUnitario Decimal @db.Decimal(10, 2)
+  compra     Compra    @relation(fields: [compraId], references: [id])
+  compraId   Int
+  producto   Producto  @relation(fields: [productoId], references: [id])
+  productoId Int
+}
+
+model Valoracion {
+  id         Int      @id @default(autoincrement())
+  puntuacion Int
+  comentario String?
+  fecha      DateTime @default(now())
+
+  comprador   Usuario @relation("CompradorValoraciones", fields: [compradorId], references: [id])
+  compradorId Int
+
+  locatario   Usuario @relation("LocatarioValoraciones", fields: [locatarioId], references: [id])
+  locatarioId Int
+}
+
+model Envio {
+  id              Int         @id @default(autoincrement())
+  estadoEnvio     EstadoEnvio
+  fechaAsignacion DateTime    @default(now())
+  fechaEntrega    DateTime?
+
+  compra     Compra  @relation(fields: [compraId], references: [id])
+  compraId   Int      @unique
+
+  repartidor Usuario @relation("RepartidorEnvios", fields: [repartidorId], references: [id])
+  repartidorId Int
+}
+
+enum Rol {
+  admin
+  locatario
+  comprador
+  repartidor
+}
+
+enum MetodoEntrega {
+  envio
+  retiro
+  ambos
+}
+
+enum EstadoCompra {
+  pendiente
+  enviado
+  entregado
+  cancelado
+}
+
+enum EstadoEnvio {
+  pendiente
+  en_camino
+  entregado
+  cancelado
+}
+*/

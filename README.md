@@ -1,80 +1,90 @@
-# 🏘️ Plataforma Vecinal de Comercio Local
+# 🛒 Vecindario Online - Backend
 
-Bienvenido al proyecto de la **Junta de Vecinos**, una plataforma digital que reúne a las tiendas y kioscos del vecindario en un solo lugar. Aquí los locatarios pueden publicar productos, los compradores hacer pedidos, y los administradores supervisar la actividad comercial.
+Este es el backend del proyecto **Vecindario Online**, construido con **NestJS**, **TypeScript**, **Prisma** y **PostgreSQL**.
 
----
+## 🧰 Tecnologías
 
-## 🚀 Tecnologías Utilizadas
+- NestJS
+- Prisma ORM
+- PostgreSQL
+- JWT (Passport.js)
+- TypeScript
 
-- **Frontend**: React
-- **Backend**: Node.js, Express
-- **Base de Datos**: PostgreSQL
-- **ORM**: Prisma
-- **Autenticación**: JWT, bcrypt
-- **Otros**: CORS, dotenv
+## 🧬 Base de Datos (Prisma)
 
----
+El archivo con el esquema de base de datos se encuentra en:
 
-## ⚙️ Instalación del Proyecto
+backend/prisma/schema.prisma
 
-### 1. Clona el repositorio
+Contiene las siguientes entidades:
 
-```bash
-git clone https://github.com/tu-usuario/tu-repo.git
-cd tu-repo
-```
+- `User`: Información básica del usuario
+- `Role`: Tipos de roles (en español: "administrador", "locatario", "comprador")
+- `UserRole`: Tabla intermedia para asignación de múltiples roles a un usuario
+- `Locatario`: Información adicional del usuario cuando tiene rol de locatario
+- `Product`: Productos registrados por locatarios
 
-### 2. Instala las dependencias
+Relaciones importantes:
 
-#### Backend
-```bash
-cd backend
-npm install
-```
+- Un usuario puede tener múltiples roles.
+- Un locatario es un usuario con datos adicionales y productos.
+- Un producto pertenece a un locatario.
+## 📦 Instalación
 
-#### Frontend
-```bash
-cd ../frontend
-npm install
-```
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/usuario/proyecto.git
+   cd proyecto/backend
+2. Instala las dependencias
+    ```bash
+    npm install
+    ```
+3. Configura tu entorno: Crea un archivo .env con el siguiente contenido:
+   ```ini
+   DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/nombreDB
+   JWT_SECRET=supersecret
+4. Aplica las migraciones y genera el cliente Prisma:
+   ```bash
+   npx prisma migrate dev --name init
+   npx prisma generate
+5. Agrega los datos de prueba
+   ```bash
+   npm run seed
 
-### 3. Configura el entorno
+6. Inicia el servidor:
+   ```bash
+   npm run start:dev
 
-Crea un archivo `.env` en la carpeta `backend` con el siguiente contenido:
+DATOS DE PRUEBA
+  ```markdown
+ADMIN:
+  {
+    firsName: "Admin",
+    lastName: "Uno",
+    email: "admin@admin.com",
+    password: "password"
+  }
+LOCATARIO
+  {
+    firstName: "Locatario",
+    lastName: "Mercado",
+    email: "locatario@example.com",
+    password: "password"
+  }
+  ```
 
-```env
-DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/nombre_de_tu_db"
-JWT_SECRET="una_clave_secreta"
-NODE_ENV="development"
-```
+## 🔐 Autenticación
+Se usa JWT para proteger rutas. Para acceder a rutas protegidas, es necesario:
+1. Registrarse (/auth/register)
 
-> Asegúrate de reemplazar los valores según tu configuración local.
+   para el registro se necesita: firstName, lastName, email, password
 
-### 4. Inicializa la base de datos
-
-#### 4.1 Ejecuta migraciones con Prisma
-```bash
-cd backend
-npx prisma migrate dev --name init
-```
-
-#### 4.2 Llena la base de datos con datos de prueba
-```bash
-npm run seed
-```
-
-### 5. Inicia los servidores
-
-#### Backend
-```bash
-npm run dev
-```
 
 #### Frontend
 En otra terminal:
 ```bash
 cd frontend
-npm start
+npm run dev
 ```
 
 ### 6. Accede a la app
@@ -92,9 +102,8 @@ http://localhost:3001
 | Rol       | Email                    | Contraseña |
 |-----------|--------------------------|------------|
 | ADMIN     | admin@admin.com          | password   |
-| LOCATARIO | locatario@example.com    | password   |
-| COMPRADOR | comprador@example.com    | password   |
-
+| COMPRADOR | max@gmail.com            | password   |
+| LOCATARIO | locatario@gmail.com      | password   |
 ---
 
 ## 🧭 Funcionalidades por Rol
@@ -129,6 +138,22 @@ root/
 
 ---
 
+3. Usar el token JWT en el header:
+  ```makefile
+  Authorization: Bearer TU_TOKEN
+  ```
+
+## Estructura actual
+- User: Todos los usuarios registrados
+- Role: Roles (administrador, locatario, comprador)
+- UserRole: Relación entre usuarios y roles
+- Locatario: Información del comercio de un locatario
+- Product: Productos creados por locatarios
 
 
-
+## 🔛 Rutas utiles para frontend/backend
+- POST /auth/register → Registro
+- POST /auth/login → Login
+- GET /users/me → Obtener perfil autenticado (token necesario)
+- POST /locatario → Crear perfil locatario (token necesario)
+- GET /locatario → Ver info de locatario (token necesario)
