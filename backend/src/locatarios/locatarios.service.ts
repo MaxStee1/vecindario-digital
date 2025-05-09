@@ -56,6 +56,15 @@ export class LocatariosService {
     });
   }
 
+  async deleteProduct(userId: number, productId: number) {
+    // verificar que el producto pertenezca al locatario
+    await this.ValidateProductOwnership(userId, productId);
+
+    return this.prisma.producto.delete({
+      where: { id: productId },
+    });
+  }
+
   private async ValidateProductOwnership(userId: number, productId: number) {
     const product = await this.prisma.producto.findFirst({
       where: {
