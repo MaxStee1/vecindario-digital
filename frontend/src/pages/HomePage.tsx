@@ -6,23 +6,35 @@ const HomePage = () => {
     return (
         <div
             style={{
+                backgroundColor: "#ffffff", // Fondo blanco de toda la pantalla
+                minHeight: "100vh", // Altura mínima para cubrir toda la pantalla
+                padding: "20px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
-                minHeight: "100vh",
                 textAlign: "center",
-                padding: "20px",
             }}
         >
-            <header>
-                <h1>Comercio Digital y Local</h1>
-                <p>Compra y vende todo lo que quieras dentro de tu comunidad</p>
+            <header style={{ marginBottom: "20px" }}>
+                <h1 style={{ color: "#000000", marginBottom: "10px" }}>Comercio Digital y Local</h1>
+                <hr
+                    style={{
+                        border: "none",
+                        height: "2px",
+                        backgroundColor: "#ff6600", // Línea naranja
+                        marginBottom: "20px",
+                        width: "100%", // Línea que ocupa todo el ancho
+                    }}
+                />
+                <p style={{ color: "#000000" }}>
+                    Compra y vende todo lo que quieras dentro de tu comunidad
+                </p>
             </header>
             <main>
                 <div style={{ marginBottom: "20px" }}>
-                    <h2>¿Ya tienes una cuenta?</h2>
-                    <p>Inicia sesión y empieza a comprar y vender</p>
+                    <h2 style={{ color: "#000000" }}>¿Ya tienes una cuenta?</h2>
+                    <p style={{ color: "#000000" }}>Inicia sesión y empieza a comprar y vender</p>
                     <button
                         onClick={() => navigate("/login")}
                         style={{
@@ -30,14 +42,18 @@ const HomePage = () => {
                             fontSize: "16px",
                             marginTop: "10px",
                             cursor: "pointer",
+                            backgroundColor: "#007bff", // Botón azul
+                            border: "none",
+                            borderRadius: "4px",
+                            color: "#ffffff", // Texto blanco
                         }}
                     >
                         Iniciar Sesión
                     </button>
                 </div>
                 <div>
-                    <h2>¿No tienes cuenta?</h2>
-                    <p>Regístrate para acceder al comercio local</p>
+                    <h2 style={{ color: "#000000" }}>¿No tienes cuenta?</h2>
+                    <p style={{ color: "#000000" }}>Regístrate para acceder al comercio local</p>
                     <button
                         onClick={() => navigate("/register")}
                         style={{
@@ -45,6 +61,10 @@ const HomePage = () => {
                             fontSize: "16px",
                             marginTop: "10px",
                             cursor: "pointer",
+                            backgroundColor: "#007bff", // Botón azul
+                            border: "none",
+                            borderRadius: "4px",
+                            color: "#ffffff", // Texto blanco
                         }}
                     >
                         Registrarse

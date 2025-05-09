@@ -5,6 +5,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
+import { useNavigate } from "react-router-dom";
 
 interface Producto {
     id: number;
@@ -16,9 +17,12 @@ interface Producto {
 
 const LocatarioPage = () => {
     const [productos, setProductos] = useState<Producto[]>([]);
+    const [globalFilterNombre, setGlobalFilterNombre] = useState<string>("");
+    const [globalFilterDescripcion, setGlobalFilterDescripcion] = useState<string>("");
     const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
     const [editDialogVisible, setEditDialogVisible] = useState(false);
     const [addDialogVisible, setAddDialogVisible] = useState(false);
+    const navigate = useNavigate();
     const [newProducto, setNewProducto] = useState<Producto>({
         id: 0,
         nombre: "",
@@ -73,23 +77,19 @@ const LocatarioPage = () => {
 
     const addProducto = async () => {
         const token = localStorage.getItem("token");
-    
-        // Verifica que los campos obligatorios estén completos
+
         if (!newProducto.nombre || newProducto.precio <= 0 || newProducto.stock < 0) {
             alert("Por favor, completa todos los campos obligatorios correctamente.");
             return;
         }
-    
-        // Crea un objeto sin el campo `id`
+
         const productoData = {
             nombre: newProducto.nombre,
             descripcion: newProducto.descripcion,
             precio: newProducto.precio,
             stock: newProducto.stock,
         };
-    
-        console.log("Producto a agregar:", productoData); // Verifica los datos enviados
-    
+
         try {
             const response = await axios.post("http://localhost:3001/locatarios/productos", productoData, {
                 headers: {
@@ -98,11 +98,7 @@ const LocatarioPage = () => {
             });
             alert("Producto agregado correctamente.");
             setAddDialogVisible(false);
-    
-            // Actualiza la lista de productos con el nuevo producto
             setProductos((prev) => [...prev, response.data]);
-    
-            // Resetea el formulario
             setNewProducto({
                 id: 0,
                 nombre: "",
@@ -112,8 +108,6 @@ const LocatarioPage = () => {
             });
         } catch (error: any) {
             console.error("Error al agregar el producto:", error);
-    
-            // Muestra un mensaje de error más detallado si está disponible
             if (error.response && error.response.data && error.response.data.message) {
                 alert(`Error: ${error.response.data.message}`);
             } else {
@@ -121,15 +115,11 @@ const LocatarioPage = () => {
             }
         }
     };
-    //falta crear el servicio en el backend para eliminar el producto
-    // y agregar la ruta en el controller
-    // y el servicio en el locatario.service.ts
-    // y el dto para eliminar el producto
-    // y el guard para verificar que el locatario sea el dueño del producto
+
     const deleteProducto = async (productoId: number) => {
         const token = localStorage.getItem("token");
         try {
-            await axios.delete(`http://localhost:3001/locatarios/productos/${productoId}`, { 
+            await axios.delete(`http://localhost:3001/locatarios/productos/${productoId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -141,50 +131,190 @@ const LocatarioPage = () => {
         }
     };
 
+    const onFilterNombre = (value: string) => {
+        setGlobalFilterNombre(value.toLowerCase());
+    };
+
+    const onFilterDescripcion = (value: string) => {
+        setGlobalFilterDescripcion(value.toLowerCase());
+    };
+
+    const filteredProductos = productos.filter(
+        (producto) =>
+            (producto.nombre?.toLowerCase() || "").includes(globalFilterNombre) &&
+            (producto.descripcion?.toLowerCase() || "").includes(globalFilterDescripcion)
+    );
+
     return (
-        <div>
-            <h2>Panel de Locatario</h2>
-            <Button
-                label="Agregar Producto"
-                onClick={() => setAddDialogVisible(true)}
-                className="p-button-success"
-                style={{ marginBottom: "50px" }}
-            />
-            <DataTable value={productos} paginator rows={10} rowsPerPageOptions={[5, 10, 20]}>
-                <Column field="id" header="ID" />
-                <Column field="nombre" header="Nombre" />
-                <Column field="descripcion" header="Descripción" />
-                <Column field="precio" header="Precio" />
-                <Column field="stock" header="Stock" />
-                <Column
-                    header="Acciones"
-                    body={(rowData: Producto) => (
-                        <div>
-                            <Button
-                                label="Editar"
-                                onClick={() => openEditDialog(rowData)}
-                                className="p-button-warning"
-                                style={{ marginRight: "10px" }}
-                            />
-                            <Button
-                                label="Eliminar"
-                                onClick={() => deleteProducto(rowData.id)}
-                                className="p-button-danger"
-                            />
-                        </div>
-                    )}
+        <div
+            style={{
+                backgroundColor: "#ffffff", // Fondo blanco de toda la pantalla
+                minHeight: "100vh", // Altura mínima para cubrir toda la pantalla
+                padding: "20px",
+            }}
+        >
+            <div
+                style={{
+                    marginLeft: "20px",
+                    padding: "20px",
+                    backgroundColor: "#ffffff", // Fondo blanco del cuadro
+                    color: "#000000", // Texto negro
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
+            >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <h2 style={{ color: "#000000", marginBottom: "10px" }}>Panel de Locatario</h2>
+                    <Button
+                        label="Cerrar Sesión"
+                        onClick={() => {
+                            localStorage.removeItem("token"); // Elimina el token
+                            navigate("/"); // Redirige al HomePage
+                        }}
+                        style={{
+                            backgroundColor: "#007bff", // Botón azul
+                            borderColor: "#007bff",
+                            color: "#fff",
+                        }}
+                    />
+                </div>
+                <hr
+                    style={{
+                        border: "none",
+                        height: "2px",
+                        backgroundColor: "#ff6600", // Línea naranja
+                        marginBottom: "20px",
+                    }}
                 />
-            </DataTable>
+                <Button
+                    label="Agregar Producto"
+                    onClick={() => setAddDialogVisible(true)}
+                    className="p-button-success"
+                    style={{
+                        marginBottom: "20px",
+                        backgroundColor: "#007bff", // Botón azul
+                        borderColor: "#007bff",
+                        color: "#fff",
+                    }}
+                />
+                <DataTable
+                    value={filteredProductos}
+                    paginator
+                    rows={10}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    sortMode="multiple"
+                    style={{
+                        backgroundColor: "#ffffff",
+                        borderRadius: "8px",
+                        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                    }}
+                >
+                    <Column field="id" header="ID" sortable />
+                    <Column
+                        field="nombre"
+                        header={
+                            <div>
+                                <span style={{ color: "#000000" }}>Nombre</span>
+                                <InputText
+                                    placeholder="Buscar"
+                                    value={globalFilterNombre}
+                                    onChange={(e) => onFilterNombre(e.target.value)}
+                                    style={{
+                                        marginLeft: "10px",
+                                        width: "150px",
+                                        borderRadius: "4px",
+                                        border: "1px solid #ccc",
+                                        backgroundColor: "#f0f0f0", // Fondo gris claro
+                                        color: "#000000", // Texto blanco
+                                    }}
+                                />
+                            </div>
+                        }
+                    />
+                    <Column
+                        field="descripcion"
+                        header={
+                            <div>
+                                <span style={{ color: "#000000" }}>Descripción</span>
+                                <InputText
+                                    placeholder="Buscar"
+                                    value={globalFilterDescripcion}
+                                    onChange={(e) => onFilterDescripcion(e.target.value)}
+                                    style={{
+                                        marginLeft: "10px",
+                                        width: "150px",
+                                        borderRadius: "4px",
+                                        border: "1px solid #ccc",
+                                        backgroundColor: "#f0f0f0", // Fondo gris claro
+                                        color: "#000000", // Texto blanco
+                                    }}
+                                />
+                            </div>
+                        }
+                    />
+                    <Column field="precio" header="Precio" sortable />
+                    <Column field="stock" header="Stock" sortable />
+                    <Column
+                        header="Acciones"
+                        body={(rowData: Producto) => (
+                            <div>
+                                <Button
+                                    label="Editar"
+                                    onClick={() => openEditDialog(rowData)}
+                                    style={{
+                                        marginRight: "10px",
+                                        backgroundColor: "#007bff", // Botón azul
+                                        borderColor: "#007bff",
+                                        color: "#fff",
+                                    }}
+                                />
+                                <Button
+                                    label="Eliminar"
+                                    onClick={() => deleteProducto(rowData.id)}
+                                    style={{
+                                        backgroundColor: "#007bff", // Botón azul
+                                        borderColor: "#007bff",
+                                        color: "#fff",
+                                    }}
+                                />
+                            </div>
+                        )}
+                    />
+                </DataTable>
+            </div>
+        
 
             {/* Dialogo para agregar producto */}
-                        <Dialog
+            <Dialog
                 header="Agregar Producto"
                 visible={addDialogVisible}
                 onHide={() => setAddDialogVisible(false)}
+                style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.95)", // Fondo blanco semitransparente
+                    color: "#000000", // Texto negro
+                }}
                 footer={
                     <div>
-                        <Button label="Guardar" onClick={addProducto} className="p-button-success" />
-                        <Button label="Cancelar" onClick={() => setAddDialogVisible(false)} className="p-button-danger" />
+                        <Button
+                            label="Guardar"
+                            onClick={addProducto}
+                            className="p-button-success"
+                            style={{
+                                backgroundColor: "#007bff", // Botón azul
+                                borderColor: "#007bff",
+                                color: "#fff",
+                            }}
+                        />
+                        <Button
+                            label="Cancelar"
+                            onClick={() => setAddDialogVisible(false)}
+                            className="p-button-danger"
+                            style={{
+                                backgroundColor: "#007bff", // Botón azul
+                                borderColor: "#007bff",
+                                color: "#fff",
+                            }}
+                        />
                     </div>
                 }
             >
@@ -231,10 +361,32 @@ const LocatarioPage = () => {
                 header="Editar Producto"
                 visible={editDialogVisible}
                 onHide={() => setEditDialogVisible(false)}
+                style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.95)", // Fondo blanco semitransparente
+                    color: "#000000", // Texto negro
+                }}
                 footer={
                     <div>
-                        <Button label="Guardar" onClick={saveProducto} className="p-button-success" />
-                        <Button label="Cancelar" onClick={() => setEditDialogVisible(false)} className="p-button-danger" />
+                        <Button
+                            label="Guardar"
+                            onClick={saveProducto}
+                            className="p-button-success"
+                            style={{
+                                backgroundColor: "#007bff", // Botón azul
+                                borderColor: "#007bff",
+                                color: "#fff",
+                            }}
+                        />
+                        <Button
+                            label="Cancelar"
+                            onClick={() => setEditDialogVisible(false)}
+                            className="p-button-danger"
+                            style={{
+                                backgroundColor: "#007bff", // Botón azul
+                                borderColor: "#007bff",
+                                color: "#fff",
+                            }}
+                        />
                     </div>
                 }
             >
