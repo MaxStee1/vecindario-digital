@@ -102,8 +102,8 @@ http://localhost:3001
 | Rol       | Email                    | Contraseña |
 |-----------|--------------------------|------------|
 | ADMIN     | admin@admin.com          | password   |
-| LOCATARIO | max@gmail.com            | password   |
-
+| COMPRADOR | max@gmail.com            | password   |
+| LOCATARIO | locatario@gmail.com      | password   |
 ---
 
 ## 🧭 Funcionalidades por Rol
