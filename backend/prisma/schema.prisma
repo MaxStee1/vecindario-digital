@@ -61,7 +61,6 @@ model Producto {
   updatedAt     DateTime   @updatedAt
   locaratio     Locatario   @relation(fields: [locatarioId], references: [id])
   locatarioId   Int
-  pedidos       Pedido[]    @relation("PedidoProductos")
 }
 
 model Pedido {
@@ -72,12 +71,11 @@ model Pedido {
   locatario     Locatario @relation(fields: [locatarioId], references: [id])
   direccionEntrega  String?
   fechaPedido   DateTime  @default(now())
-  fechaEntrega  DateTime?
+  fechaEntrega  DateTime
   estado        EstadoPedido
   metodoEntrega MetodoEntrega
   total         Int
   notas         String?
-  productos     Producto[] @relation("PedidoProductos")
 
 
   Valoracion Valoracion[]

@@ -43,13 +43,4 @@ export class LocatariosController {
       dto,
     );
   }
-
-  @Delete(':id')
-  deleteProduct(@Req() req, @Param('id') productId: string) {
-    return this.locatariosService.deleteProduct(
-      req.user.userId,
-      Number(productId),
-    );
-  }
-
 }
