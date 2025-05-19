@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import api from "../services/api";
 import LogoutButton from "../components/LogoutButton";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 
 const AdminPage = () => {
@@ -25,23 +24,13 @@ const AdminPage = () => {
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-
         const fetchData = async () => {
             try {
                 // Obtener usuarios
-                const usuarioRes = await axios.get("http://localhost:3001/admin/users", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                const usuarioRes = await api.get('/admin/users');
 
                 // obtener estadisticas
-                const stateRes = await axios.get("http://localhost:3001/admin/metrics", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
+                const stateRes = await api.get('/admin/metrics');
 
                 setUsuarios(usuarioRes.data);
                 setEstadisticas({
@@ -62,33 +51,25 @@ const AdminPage = () => {
 
     const handleEditSubmit = async () => {
         try {
-            const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:3001/admin/users/${selectedUsuario.id}`, editForm, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            await api.put(`/admin/users/${selectedUsuario.id}`, editForm,);
             
             // Actualizar la lista de usuarios
-            const response = await axios.get("http://localhost:3001/admin/users", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get("/admin/users");
             setUsuarios(response.data);
-            
             setEditDialogVisible(false);
-            toast.current.show({
-                severity: 'success',
-                summary: 'Éxito',
-                detail: 'Usuario actualizado correctamente',
-                life: 3000
+            toast.current?.show({
+                severity: "success",
+                summary: "Éxito",
+                detail: "Usuario actualizado correctamente",
+                life: 3000,
             });
         } catch (error) {
             console.error("Error al actualizar usuario:", error);
-            toast.current.show({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'No se pudo actualizar el usuario',
-                life: 3000
+            toast.current?.show({
+                severity: "error",
+                summary: "Error",
+                detail: "No se pudo actualizar el usuario",
+                life: 3000,
             });
         }
     };

@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { decodeToken } from "../utils/auth";
+import api from "../services/api";
 
 function Login() {
     const navigate = useNavigate();
@@ -9,18 +8,39 @@ function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    useEffect(() => {
+        api.get('/auth/me')
+        .then(res => {
+            const user = res.data;
+            switch (user.rol) {
+                case "admin":
+                    navigate("/admin");
+                    break;
+                case "locatario":
+                    navigate("/locatario");
+                    break;
+                case "comprador":
+                    navigate("/shop");
+                    break;
+                default:
+                    navigate("/");
+            }
+        })
+        .catch(() => {
+            // No hay usuario autenticado, no hacemos nada   
+        });
+    }, [navigate])
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:3001/auth/login", {
+            const response = await api.post("/auth/login", {
                 email,
                 password,
             });
-            const token = response.data.token;
-            localStorage.setItem("token", token);
 
-            const user = decodeToken(response.data.token);
+            const user = response.data;
 
             switch (user.rol) {
                 case "admin":

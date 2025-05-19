@@ -1,14 +1,16 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 const LogoutButton = () => {
     const navigate = useNavigate();
 
     // Función para manejar el cierre de sesión
-    const handleLogout = () => {
-        // Eliminar el token del localStorage
-        localStorage.removeItem("token");
-        // Redirigir al usuario a la página de login
+    const handleLogout = async () => {
+        try {
+            await api.post("/auth/logout");
+        } catch {
+            // ignorar error
+        }
         navigate("/");
     };
 

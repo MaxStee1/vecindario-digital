@@ -12,6 +12,7 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Get('users/:rol')
+  @Roles('admin')
   getUserByRole(@Param('rol') rol: Rol) {
     return this.adminService.getUsersByRole(rol);
   }
@@ -23,6 +24,7 @@ export class AdminController {
   }
 
   @Put('users/:id')
+  @Roles('admin')
   updateUser(
     @Param('id') id: string,
     @Body() data: { nombre?: string; direccion?: string },
@@ -31,12 +33,14 @@ export class AdminController {
   }
 
   @Get('metrics')
+  @Roles('admin')
   getMetrics() {
     return this.adminService.getSalesMetrics();
   }
 
   // editar usuario
   @Put('users/edit/:id')
+  @Roles('admin')
   async editUser(
     @Param('id') id: string,
     @Body() data: { nombre?: string; direccion?: string },

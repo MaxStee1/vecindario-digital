@@ -5,7 +5,7 @@ import { Tag } from 'primereact/tag';
 import { Toast } from 'primereact/toast';
 import { InputNumber } from 'primereact/inputnumber';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import '../styles/principal.css';
 import LogoutButton from '../components/LogoutButton';
 
@@ -40,10 +40,10 @@ const PrincipalPage = () => {
     useEffect(() => {
         const fetchProductos = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:3001/comprador/productos', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await api.get('/comprador/productos');
+                if (response.status !== 200) {
+                    throw new Error('Error al obtener productos');
+                }
                 setProductos(response.data);
                 // Inicializar cantidades temporales
                 const iniciales = response.data.reduce((acc: any, producto: Producto) => {
@@ -169,11 +169,11 @@ const PrincipalPage = () => {
                                 />
                                 
                                 <p className="producto-descripcion">
-                                    {producto.descripcion.length <= 30 ?
+                                    {(producto.descripcion && producto.descripcion.length <= 30) ? 
                                         producto.descripcion : 
-                                        `${producto.descripcion.substring(0, 30)}...`
-                                    }
+                                        producto.descripcion ? `${producto.descripcion.substring(0, 30)}...` : 'Descripción no disponible'}
                                 </p>
+
                                 
                                 <div className="producto-actions">
                                     <div className='input-container'>

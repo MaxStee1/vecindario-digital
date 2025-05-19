@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import api from "../services/api";
 import LogoutButton from "../components/LogoutButton";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -44,14 +44,8 @@ const LocatarioPage = () => {
     }, []);
 
     const fetchProductos = async () => {
-        const token = localStorage.getItem("token");
         try {
-            const response = await axios.get("http://localhost:3001/locatarios/productos", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            console.log("data", response.data);
+            const response = await api.get("/locatarios/productos");
             setProductos(response.data);
         } catch (error) {
             console.error("Error al obtener productos", error);
@@ -75,17 +69,8 @@ const LocatarioPage = () => {
     };
 
     const saveProducto = async () => {
-        const token = localStorage.getItem("token");
         try {
-            await axios.put(
-                `http://localhost:3001/locatarios/productos/${selectedProducto.id}`,
-                selectedProducto,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            await api.put(`/locatarios/productos/${selectedProducto.id}`, selectedProducto);
             showSucces("Producto actualizado correctamente");
             setEditDialogVisible(false);
             fetchProductos();
@@ -96,17 +81,8 @@ const LocatarioPage = () => {
     };
 
     const createProducto = async () => {
-        const token = localStorage.getItem("token");
         try {
-            await axios.post(
-                "http://localhost:3001/locatarios/productos",
-                newProducto,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            await api.post("/locatarios/productos", newProducto);
             showSucces("Producto creado correctamente.");
             setCreateDialogVisible(false);
             fetchProductos();
@@ -117,16 +93,8 @@ const LocatarioPage = () => {
     };
 
     const deleteProducto = async (id: number) => {
-        const token = localStorage.getItem("token");
         try {
-            await axios.delete(
-                `http://localhost:3001/locatarios/productos/${id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            await api.delete(`/locatarios/productos/${id}`);
             showSucces("Producto eliminado correctamente.");
             fetchProductos();
         } catch (error) {
@@ -145,12 +113,7 @@ const LocatarioPage = () => {
 
     const obtenerLocatario = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await axios.get("http://localhost:3001/locatarios/info", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            const response = await api.get("/locatarios/info");
             setLocatarioNombre(response.data.usuario.nombre);
             setNombreTienda(response.data.nombreTienda);
         } catch (error) {
