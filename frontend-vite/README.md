@@ -1,54 +1,51 @@
-# React + TypeScript + Vite
+# Frontend - Vecindario Digital
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web desarrollada en **React** con **Vite** para la plataforma de comercio local.
 
-Currently, two official plugins are available:
+## Tecnologías
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [React](https://react.dev/)
+- [Vite](https://vitejs.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [PrimeReact](https://primereact.org/) (UI)
+- [Axios](https://axios-http.com/) (HTTP requests)
+- [React Router](https://reactrouter.com/)
 
-## Expanding the ESLint configuration
+## Instalación
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Instala dependencias:
+   ```bash
+   npm install
+   ```
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+2. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. Accede a la app en [http://localhost:5173](http://localhost:5173)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Configuración
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+- El frontend está configurado para consumir la API en `http://localhost:3001` (ver [src/services/api.ts](src/services/api.ts)).
+- Las cookies de autenticación se envían automáticamente (`withCredentials: true`).
+
+## Scripts
+
+- `npm run dev` - Inicia el servidor de desarrollo
+- `npm run build` - Compila la app para producción
+- `npm run preview` - Previsualiza la build de producción
+- `npm run lint` - Linting del código
+
+## Estructura
+
+- `src/pages/` - Vistas principales (Login, Registro, Home, Admin, Locatario, Comprador)
+- `src/components/` - Componentes reutilizables (LogoutButton, ProtectedRoute, etc.)
+- `src/services/api.ts` - Configuración de Axios para llamadas a la API
+
+## Notas
+
+- El frontend requiere que el backend esté corriendo en `http://localhost:3001`.
+- El login y registro funcionan mediante cookies HTTP-only, no se almacena el token en localStorage.
+
+---
