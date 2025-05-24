@@ -151,9 +151,42 @@ async function main() {
     ],
   });
 
+  // Obtener productos para el carrito (usando findMany para obtener los IDs)
+  const productos = await prisma.producto.findMany();
 
-  // crear pedidos
+  // Agregar productos al carrito de comprador1
+  await prisma.carritoItem.createMany({
+    data: [
+      {
+        usuarioId: comprador1.id,
+        productoId: productos[0].id, // Memoria RAM 8 GB
+        cantidad: 2,
+      },
+      {
+        usuarioId: comprador1.id,
+        productoId: productos[3].id, // Manzanas
+        cantidad: 5,
+      },
+    ],
+  });
 
+  // Agregar productos al carrito de comprador2
+  await prisma.carritoItem.createMany({
+    data: [
+      {
+        usuarioId: comprador2.id,
+        productoId: productos[1].id, // Teclado mecanico
+        cantidad: 1,
+      },
+      {
+        usuarioId: comprador2.id,
+        productoId: productos[5].id, // Tomates
+        cantidad: 10,
+      },
+    ],
+  });
+
+  // crear pedidos (igual que antes)
   const pedido1 = await prisma.pedido.create({
     data: {
       compradorId: comprador1.comprador?.id!,
