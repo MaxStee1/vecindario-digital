@@ -115,4 +115,15 @@ enum EstadoEnvio {
   entregado
   cancelado
 }
+model CarritoItem {
+  id            Int      @id @default(autoincrement())
+  usuarioId     Int
+  productoId    Int
+  cantidad      Int      @default(1)
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
+  producto      Producto @relation(fields: [productoId], references: [id])
+  fechaAgregado DateTime @default(now())
+
+  @@unique([usuarioId, productoId])
+}
 */

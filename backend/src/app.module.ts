@@ -8,6 +8,8 @@ import { LocatariosService } from './locatarios/locatarios.service';
 import { LocatariosModule } from './locatarios/locatarios.module';
 import { CompradorService } from './comprador/comprador.service';
 import { CompradorModule } from './comprador/comprador.module';
+import { ProductosModule } from './productos/productos.module';
+import { CarritoModule } from './carrito/carrito.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { CompradorModule } from './comprador/comprador.module';
     AdminModule,
     LocatariosModule,
     CompradorModule,
+    ProductosModule,
+    CarritoModule,
   ],
   controllers: [AppController],
   providers: [AppService, LocatariosService, CompradorService],

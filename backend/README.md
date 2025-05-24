@@ -21,78 +21,68 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# Backend - Vecindario Digital
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+API RESTful para la plataforma de comercio local, desarrollada con **NestJS**, **Prisma** y **PostgreSQL**.
 
-## Project setup
+## Tecnologías
 
-```bash
-$ npm install
-```
+- [NestJS](https://nestjs.com/)
+- [Prisma ORM](https://www.prisma.io/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [JWT](https://jwt.io/) (autenticación)
+- [TypeScript](https://www.typescriptlang.org/)
 
-## Compile and run the project
+## Configuración
 
-```bash
-# development
-$ npm run start
+1. Copia `.env.example` a `.env` y configura tu conexión a la base de datos y el secret JWT:
+   ```
+   DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/vecindario
+   JWT_SECRET=supersecret
+   ```
 
-# watch mode
-$ npm run start:dev
+2. Instala dependencias:
+   ```bash
+   npm install
+   ```
 
-# production mode
-$ npm run start:prod
-```
+3. Aplica migraciones y genera el cliente Prisma:
+   ```bash
+   npx prisma migrate dev --name init
+   npx prisma generate
+   ```
 
-## Run tests
+4. (Opcional) Carga datos de prueba:
+   ```bash
+   npm run seed
+   ```
 
-```bash
-# unit tests
-$ npm run test
+## Scripts
 
-# e2e tests
-$ npm run test:e2e
+- `npm run start:dev` - Inicia el servidor en modo desarrollo
+- `npm run build` - Compila el proyecto
+- `npm run test` - Ejecuta tests unitarios
+- `npm run test:e2e` - Ejecuta tests end-to-end
+- `npm run seed` - Carga datos de prueba
 
-# test coverage
-$ npm run test:cov
-```
+## Endpoints principales
 
-## Deployment
+- `POST /auth/register` - Registro de usuario
+- `POST /auth/login` - Login (devuelve cookie JWT)
+- `POST /auth/logout` - Logout
+- `GET /auth/me` - Perfil autenticado
+- `GET /locatarios/productos` - Productos del locatario
+- `GET /comprador/productos` - Productos disponibles para compradores
+- `GET /admin/users` - Listado de usuarios (admin)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Estructura de la base de datos
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Consulta [prisma/schema.prisma](prisma/schema.prisma) para ver el modelo de datos.
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+## Notas
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- El backend corre por defecto en el puerto **3001**.
+- El frontend debe apuntar a `http://localhost:3001` para las peticiones API.
+- El token JWT se almacena en una cookie HTTP-only para mayor seguridad.
 
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---

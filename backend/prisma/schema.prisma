@@ -7,96 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
-  id           Int       @id @default(autoincrement())
-  nombre       String
-  email        String    @unique
-  contrasenia  String
-  rol          Rol
-  direccion    String?
-  telefono     String?
-  CreatedAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  locatario Locatario?
-  comprador Comprador?
-}
-
-model Locatario {
-  id        Int     @id @default(autoincrement())
-  usuarioId Int     @unique
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
-  nombreTienda  String
-  descripcion   String?
-  direccionTienda String
-  horarioApertura String?
-  horarioCierre   String?
-  puntajeVisibilidad  Int   @default(100)
-  fechaRegistro   DateTime  @default(now())
-  metodosEntrega   MetodoEntrega[]
-
-  productos   Producto[]
-  //proveedores Proveedor[]
-  valoraciones  Valoracion[]
-  pedidos       Pedido[]
-}
-
-model Comprador {
-  id      Int   @id @default(autoincrement())
-  usuarioId Int @unique
-  usuario   Usuario   @relation(fields: [usuarioId], references: [id])
-  direccionEntrega String?
-
-  pedidos   Pedido[]
-  valoraciones  Valoracion[]
-}
-
-model Producto {
-  id            Int       @id @default(autoincrement())
-  nombre        String
-  descripcion   String?
-  precio        Int
-  stock         Int
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  locaratio     Locatario   @relation(fields: [locatarioId], references: [id])
-  locatarioId   Int
-  pedidos       Pedido[]    @relation("PedidoProductos")
-}
-
-model Pedido {
-  id    Int   @id @default(autoincrement())
-  compradorId   Int
-  comprador     Comprador @relation(fields: [compradorId], references: [id])
-  locatarioId   Int
-  locatario     Locatario @relation(fields: [locatarioId], references: [id])
-  direccionEntrega  String?
-  fechaPedido   DateTime  @default(now())
-  fechaEntrega  DateTime?
-  estado        EstadoPedido
-  metodoEntrega MetodoEntrega
-  total         Int
-  notas         String?
-  productos     Producto[] @relation("PedidoProductos")
-
-
-  Valoracion Valoracion[]
-}
-
-model Valoracion {
-  id      Int   @id @default(autoincrement())
-  comprador   Comprador   @relation(fields: [compradorId], references: [id])
-  compradorId Int
-  locatario   Locatario   @relation(fields: [locatarioId], references: [id])
-  locatarioId Int
-  pedido      Pedido?     @relation(fields: [pedidoId], references: [id])
-  pedidoId    Int?
-  calificacion    Int
-  comentario    String?
-  fecha     DateTime    @default(now()) 
-  tipoEntrega   MetodoEntrega   
-}
-
 enum Rol {
   admin
   locatario
@@ -114,4 +24,107 @@ enum EstadoPedido {
   enviado
   entregado
   cancelado
+}
+
+model Usuario {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  email       String   @unique
+  contrasenia String
+  rol         Rol
+  direccion   String?
+  telefono    String?
+  CreatedAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  locatario Locatario?
+  comprador Comprador?
+  carrito   CarritoItem[]
+}
+
+model Locatario {
+  id                 Int             @id @default(autoincrement())
+  usuarioId          Int             @unique
+  usuario            Usuario         @relation(fields: [usuarioId], references: [id])
+  nombreTienda       String
+  descripcion        String?
+  direccionTienda    String
+  horarioApertura    String?
+  horarioCierre      String?
+  puntajeVisibilidad Int             @default(100)
+  fechaRegistro      DateTime        @default(now())
+  metodosEntrega     MetodoEntrega[]
+
+  productos    Producto[]
+  valoraciones Valoracion[]
+  pedidos      Pedido[]
+}
+
+model Comprador {
+  id               Int     @id @default(autoincrement())
+  usuarioId        Int     @unique
+  usuario          Usuario @relation(fields: [usuarioId], references: [id])
+  direccionEntrega String?
+
+  pedidos      Pedido[]
+  valoraciones Valoracion[]
+}
+
+model Producto {
+  id            Int       @id @default(autoincrement())
+  nombre        String
+  descripcion   String?
+  precio        Decimal   @db.Decimal(10, 2)
+  stock         Int
+  locatarioId   Int
+  locatario     Locatario @relation(fields: [locatarioId], references: [id])
+  fechaCreacion DateTime  @default(now())
+  fechaEdicion  DateTime?  @updatedAt
+
+  carrito CarritoItem[]
+  pedidos Pedido[]      @relation("PedidoProductos")
+}
+
+model Pedido {
+  id               Int           @id @default(autoincrement())
+  compradorId      Int
+  comprador        Comprador     @relation(fields: [compradorId], references: [id])
+  locatarioId      Int
+  locatario        Locatario     @relation(fields: [locatarioId], references: [id])
+  direccionEntrega String?
+  fechaPedido      DateTime      @default(now())
+  fechaEntrega     DateTime?
+  estado           EstadoPedido
+  metodoEntrega    MetodoEntrega
+  total            Int
+  notas            String?
+  productos        Producto[]    @relation("PedidoProductos")
+
+  Valoracion Valoracion[]
+}
+
+model Valoracion {
+  id           Int           @id @default(autoincrement())
+  comprador    Comprador     @relation(fields: [compradorId], references: [id])
+  compradorId  Int
+  locatario    Locatario     @relation(fields: [locatarioId], references: [id])
+  locatarioId  Int
+  pedido       Pedido?       @relation(fields: [pedidoId], references: [id])
+  pedidoId     Int?
+  calificacion Int
+  comentario   String?
+  fecha        DateTime      @default(now())
+  tipoEntrega  MetodoEntrega
+}
+
+model CarritoItem {
+  id            Int      @id @default(autoincrement())
+  usuarioId     Int
+  productoId    Int
+  cantidad      Int      @default(1)
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
+  producto      Producto @relation(fields: [productoId], references: [id])
+  fechaAgregado DateTime @default(now())
+
+  @@unique([usuarioId, productoId])
 }
