@@ -37,8 +37,8 @@ export class CompradorController {
     return this.compradorService.getProductosDisponibles();
   }
 
-  @Post('valoraciones')
+  /*@Post('valoraciones')
   crearValoracion(@Req() req, @Body() dto: CreateValoracionDto) {
     return this.compradorService.crearValoracion(req.user.userId, dto);
-  }
+  }*/
 }

@@ -1,5 +1,14 @@
-import { IsNumber, IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsNumber, IsString, IsEnum, IsOptional, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 import { MetodoEntrega, EstadoPedido } from '@prisma/client';
+
+class PedidoProductoDto {
+  @IsNumber()
+  productoId!: number;
+
+  @IsNumber()
+  cantidad!: number;
+}
 
 export class CreatePedidoDto {
   @IsNumber()
@@ -27,6 +36,8 @@ export class CreatePedidoDto {
   @IsOptional()
   fechaEntrega?: string;
 
-  @IsString()
-  productoId!: string;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PedidoProductoDto)
+  productos!: PedidoProductoDto[];
 }

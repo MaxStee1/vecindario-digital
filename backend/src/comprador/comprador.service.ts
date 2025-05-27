@@ -22,29 +22,31 @@ export class CompradorService {
   }
 
   async crearPedido(userId: number, dto: CreatePedidoDto) {
-    const { locatarioId, ...rest } = dto;
-    
-    return this.prisma.pedido.create({
-      data: {
+  const { locatarioId, productos, ...rest } = dto;
+
+  return this.prisma.pedido.create({
+    data: {
       direccionEntrega: rest.direccionEntrega,
       metodoEntrega: rest.metodoEntrega,
-      estado: rest.estado ?? 'pendiente', 
+      estado: rest.estado ?? 'pendiente',
       total: rest.total,
       notas: rest.notas,
       fechaEntrega: rest.fechaEntrega,
-      productos: { connect: [{ id: Number(rest.productoId) }] },
+      productos: {
+        connect: productos.map(p => ({ id: Number(p.productoId) })),
+      },
       comprador: { connect: { usuarioId: userId } },
       locatario: { connect: { id: locatarioId } },
-      },
-      include: {
+    },
+    include: {
       locatario: true,
       comprador: true,
       productos: true,
-      },
-    });
-  }
+    },
+  });
+}
 
-  async crearValoracion(userId: number, dto: CreateValoracionDto) {
+  /*async crearValoracion(userId: number, dto: CreateValoracionDto) {
     return this.prisma.valoracion.create({
       data: {
         calificacion: dto.calificacion,
@@ -55,7 +57,7 @@ export class CompradorService {
         pedido: dto.pedidoId ? { connect: { id: dto.pedidoId } } : undefined,
       },
     });
-  }
+  }*/
 
   async getProductosDisponibles() {
     return this.prisma.producto.findMany({
@@ -66,7 +68,7 @@ export class CompradorService {
         id: 'asc',
       },
       include: {
-        locaratio: {
+        locatario: {
           include: {
             usuario: true,
           },
@@ -75,30 +77,39 @@ export class CompradorService {
     });
   }
 
-  async getPedidos(userId: number) {
-    return this.prisma.pedido.findMany({
-      where: { compradorId: userId },
-      include: {
-        locatario: {
-          select: {
-            id: true,
-            usuario: {
-              select: {
-                nombre: true,
-              },
+async getPedidos(userId: number) {
+  //Busca el id del Comprador usando el usuarioId
+  const comprador = await this.prisma.comprador.findUnique({
+    where: { usuarioId: userId },
+    select: { id: true },
+  });
+
+  if (!comprador) return [];
+
+  //Busca los pedidos usando el id del Comprador
+  return this.prisma.pedido.findMany({
+    where: { compradorId: comprador.id },
+    include: {
+      locatario: {
+        select: {
+          id: true,
+          usuario: {
+            select: {
+              nombre: true,
             },
           },
         },
-        comprador: {
-          select: {
-            id: true,
-          },
+      },
+      comprador: {
+        select: {
+          id: true,
         },
       },
-      orderBy: {
-        fechaPedido: 'desc',
-      },
-    });
-  }
+    },
+    orderBy: {
+      fechaPedido: 'desc',
+    },
+  });
+}
 
 }
