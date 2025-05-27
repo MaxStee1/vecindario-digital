@@ -7,34 +7,34 @@ import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 
 @Controller('locatarios')
-//@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class LocatariosController {
   constructor(private locatariosService: LocatariosService) {}
 
   // Crear Producto
   @Post('productos')
-  //@Roles('locatario')
+  @Roles('locatario')
   createProduct(@Req() req, @Body() dto: CreateProductoDto) {
     return this.locatariosService.createProduct(req.user.userId, dto);
   }
 
   // listar Productos del locatario
   @Get('productos')
-  //@Roles('locatario')
+  @Roles('locatario')
   getProducts(@Req() req) {
     return this.locatariosService.getLocatarioProducts(req.user.userId);
   }
 
   // Obtener un producto por ID
   @Get('productos/:id')
-  //@Roles('locatario')
+  @Roles('locatario')
   getProductById(@Req() req, @Param('id') productId: string) {
     return this.locatariosService.getProductById(req.user.userId, Number(productId)); 
   }
 
   // Actualizar Producto
   @Put('productos/:id')
-  //@Roles('locatario')
+  @Roles('locatario')
   updateProduct(
     @Req() req,
     @Param('id') productId: string,
@@ -48,7 +48,7 @@ export class LocatariosController {
   }
 
   @Delete('productos/:id')
-  //@Roles('locatario')
+  @Roles('locatario')
   deleteProduct(@Req() req, @Param('id') productId: string) {
     return this.locatariosService.deleteProduct(
       req.user.userId,
