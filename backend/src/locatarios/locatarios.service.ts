@@ -22,7 +22,7 @@ export class LocatariosService {
     return this.prisma.producto.findFirst({
       where: {
         id: productId,
-        locaratio: { usuarioId: userId },
+        locatario: { usuarioId: userId },
       },
     });
   }
@@ -79,7 +79,7 @@ export class LocatariosService {
     const product = await this.prisma.producto.findFirst({
       where: {
         id: productId,
-        locaratio: { usuarioId: userId },
+        locatario: { usuarioId: userId },
       },
     });
     if (!product) throw new NotFoundException('Producto no encontrado');
