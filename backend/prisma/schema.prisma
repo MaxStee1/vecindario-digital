@@ -56,6 +56,7 @@ model Locatario {
   metodosEntrega     MetodoEntrega[]
 
   productos    Producto[]
+  proveedores  Proveedor[] @relation("ProveedorLocatario")
   valoraciones Valoracion[]
   pedidos      Pedido[]
 }
@@ -127,4 +128,13 @@ model CarritoItem {
   fechaAgregado DateTime @default(now())
 
   @@unique([usuarioId, productoId])
+}
+
+model Proveedor {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  email       String   @unique
+  CreatedAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  locatarios  Locatario[] @relation("ProveedorLocatario")
 }
