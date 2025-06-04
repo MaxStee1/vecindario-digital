@@ -11,6 +11,7 @@ import { CompradorModule } from './comprador/comprador.module';
 import { ProductosModule } from './productos/productos.module';
 import { CarritoModule } from './carrito/carrito.module';
 import { ProveedorModule } from './proveedor/proveedor.module';
+import { ValoracionModule } from './valoracion/valoracion.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProveedorModule } from './proveedor/proveedor.module';
     ProductosModule,
     CarritoModule,
     ProveedorModule,
+    ValoracionModule,
   ],
   controllers: [AppController],
   providers: [AppService, LocatariosService, CompradorService],

@@ -57,7 +57,6 @@ model Locatario {
 
   productos    Producto[]
   proveedores  Proveedor[] @relation("ProveedorLocatario")
-  valoraciones Valoracion[]
   pedidos      Pedido[]
 }
 
@@ -84,6 +83,7 @@ model Producto {
 
   carrito CarritoItem[]
   pedidos Pedido[]      @relation("PedidoProductos")
+  valoraciones Valoracion[]
 }
 
 model Pedido {
@@ -100,18 +100,14 @@ model Pedido {
   total            Int
   notas            String?
   productos        Producto[]    @relation("PedidoProductos")
-
-  Valoracion Valoracion[]
 }
 
 model Valoracion {
   id           Int           @id @default(autoincrement())
   comprador    Comprador     @relation(fields: [compradorId], references: [id])
   compradorId  Int
-  locatario    Locatario     @relation(fields: [locatarioId], references: [id])
-  locatarioId  Int
-  pedido       Pedido?       @relation(fields: [pedidoId], references: [id])
-  pedidoId     Int?
+  producto     Producto      @relation(fields: [productoId], references: [id])
+  productoId   Int
   calificacion Int
   comentario   String?
   fecha        DateTime      @default(now())
