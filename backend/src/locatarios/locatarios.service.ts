@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateProductoDto } from "./dto/create-producto.dto";
 import { UpdateProductoDto } from "./dto/update-producto.dto";
+import { UpdateLocatarioDto } from "./dto/update-locatario.dto";
 
 @Injectable()
 export class LocatariosService {
@@ -75,6 +76,22 @@ export class LocatariosService {
     return locatario;
   }
 
+ async updateLocatarioInfo(
+    userId: number,
+    dto: UpdateLocatarioDto,
+  ) { 
+    const locatario = await this.prisma.locatario.findUnique({
+      where: { usuarioId: userId },
+    });
+
+    if (!locatario) throw new NotFoundException('locatario no encontrado');
+
+    return this.prisma.locatario.update({
+      where: { id: locatario.id },
+      data: dto,
+    });
+  }
+
   private async ValidateProductOwnership(userId: number, productId: number) {
     const product = await this.prisma.producto.findFirst({
       where: {
@@ -84,4 +101,90 @@ export class LocatariosService {
     });
     if (!product) throw new NotFoundException('Producto no encontrado');
   }
+
+  // Proveedores
+  async getProveedores(userId: number): Promise<any[]> {
+    const locatario = await this.prisma.locatario.findUnique({
+      where: { usuarioId: userId },
+      include: { proveedores: true },
+    });
+
+    if (!locatario) throw new NotFoundException('locatario no encontrado');
+    return locatario.proveedores as any[];
+  }
+
+  async addProveedor( userId: number, proveedorId: number) {
+    const locatario = await this.prisma.locatario.findUnique({
+      where: { usuarioId: userId },
+    });
+
+    if (!locatario) throw new NotFoundException('locatario no encontrado');
+
+    const proveedor = await this.prisma.proveedor.findUnique({
+      where: { id: proveedorId },
+    });
+
+    if (!proveedor) throw new NotFoundException('Proveedor no encontrado');
+
+    // Verificar si el proveedor ya está asociado al locatario
+    const existingProveedor = await this.prisma.locatario.findFirst({
+      where: {
+        id: locatario.id,
+        proveedores: {
+          some: { id: proveedor.id },
+        },
+      },
+    });
+
+    if (existingProveedor) {
+      throw new NotFoundException('Proveedor ya asociado al locatario');
+    }
+
+    return this.prisma.locatario.update({
+      where: { id: locatario.id },
+      data: {
+        proveedores: {
+          connect: { id: proveedor.id },
+        },
+      },
+    })
+  }
+
+  async removeProveedor(userId: number, proveedorId: number) {
+    const locatario = await this.prisma.locatario.findUnique({
+      where: { usuarioId: userId },
+    });
+
+    if (!locatario) throw new NotFoundException('locatario no encontrado');
+
+    const proveedor = await this.prisma.proveedor.findUnique({
+      where: { id: proveedorId },
+      include: { locatarios: true },
+    });
+    if (!proveedor) throw new NotFoundException('Proveedor no encontrado');
+
+    // Verificar si el proveedor ya está asociado al locatario
+    const existingProveedor = await this.prisma.locatario.findFirst({
+      where: {
+        id: locatario.id,
+        proveedores: {
+          some: { id: proveedor.id },
+        },
+      },
+    });
+    
+    if (!existingProveedor) {
+      throw new NotFoundException('Proveedor no asociado al locatario');
+    }
+
+    return this.prisma.locatario.update({
+      where: { id: locatario.id },
+      data: {
+        proveedores: {
+          disconnect: { id: proveedorId },
+        },
+      },
+    });
+  }
+
 }

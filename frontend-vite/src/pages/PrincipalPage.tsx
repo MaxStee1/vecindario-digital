@@ -159,7 +159,7 @@ const PrincipalPage = () => {
                             key={producto.id} 
                             className="producto-card"
                             title={producto.nombre}
-                            subTitle={`$ ${producto.precio} - ${producto.locaratio.nombreTienda}`}
+                            subTitle={`$${producto.precio} - ${producto.locatario.nombreTienda}`}
                         >
                             <div className="producto-content" style={{ alignItems: 'center' }}>
                                 <Tag 

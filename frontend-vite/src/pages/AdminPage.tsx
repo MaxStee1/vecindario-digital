@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "../services/api";
 import LogoutButton from "../components/LogoutButton";
 import { DataTable } from "primereact/datatable";
@@ -7,6 +7,15 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
+import { SplitButton } from "primereact/splitbutton";
+import { Dropdown } from "primereact/dropdown";
+
+const rolesDisponibles = [
+    { label: "Administrador", value: "admin" },
+    { label: "Locatario", value: "locatario" },
+    { label: "Comprador", value: "comprador" },
+    { label: "Repartidor", value: "repartidor" },
+]
 
 const AdminPage = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -21,6 +30,13 @@ const AdminPage = () => {
         email: ''
     });
     const [editDialogVisible, setEditDialogVisible] = useState(false);
+    const [createDialogVisible, setCreateDialogVisible] = useState(false);
+    const [createForm, setCreateForm] = useState({
+        nombre: '', 
+        email: '',
+        password: '',
+        rol: ''
+    }); 
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
@@ -85,7 +101,70 @@ const AdminPage = () => {
 
     const openEditDialog = (usuario: any) => {
         setSelectedUsuario(usuario);
+        setEditForm({
+            nombre: usuario.nombre,
+            email: usuario.email,
+        });
         setEditDialogVisible(true);
+    };
+
+    const openDeleteDialog = (usuario: any) => {
+        if (window.confirm(`¿Estás seguro de que deseas eliminar al usuario ${usuario.nombre}?`)) {
+            handleDeleteUser(usuario.id);        
+        }
+    };
+
+    const handleDeleteUser = async (userId: number) => {
+        try{
+            await api.delete(`/admin/users/${userId}`);
+            // Actualizar la lista de usuarios
+            const response = await api.get("/admin/users");
+            setUsuarios(response.data);
+            toast.current?.show({
+                severity: "success",
+                summary: "Éxito",
+                detail: "Usuario eliminado correctamente",
+                life: 3000,
+            });
+        } catch (error) {
+            toast.current?.show({
+                severity: "error",
+                summary: "Error",
+                detail: "No se pudo eliminar el usuario",
+                life: 3000,
+            });
+            console.error("Error al eliminar usuario:", error);
+        }
+    };
+
+    const handleCreateSubmit = async () => {
+        try {
+            await api.post('/admin/users', createForm);
+            // Actualizar la lista de usuarios
+            const response = await api.get("/admin/users");
+            setUsuarios(response.data);
+            setCreateDialogVisible(false);
+            setCreateForm({
+                nombre: '',
+                email: '',
+                password: '',
+                rol: ''
+            });
+            toast.current?.show({
+                severity: "success",
+                summary: "Éxito",
+                detail: "Usuario creado correctamente",
+                life: 3000,
+            });
+        } catch (error) {
+            console.error("Error al crear usuario:", error);
+            toast.current?.show({
+                severity: "error",
+                summary: "Error",
+                detail: "No se pudo crear el usuario",
+                life: 3000,
+            });
+        }
     };
 
     const contentStyle = {
@@ -143,6 +222,15 @@ const AdminPage = () => {
                     </div>
                 </div>
 
+                <div style={{ width:"80%", display:"flex", justifyContent:"center", marginBottom:"10px"}}>
+                    <Button
+                        label="Crear Usuario"
+                        icon="pi pi-plus"
+                        className="p-button-success"
+                        onClick={() => setCreateDialogVisible(true)}
+                    />
+                </div>
+
                 {/* Sección de usuarios */}
                 <h3>Usuarios</h3>
                 <div
@@ -158,7 +246,7 @@ const AdminPage = () => {
                         value={usuarios}
                         paginator 
                         rows={10}
-                        rowsPerPageOptions={[5, 10, 25, 50]}
+                        rowsPerPageOptions={[5, 10, 25]}
                         tableStyle={{ minWidth: '50rem', alignItems:"center" }}
                         style={{ borderRadius: "10px" }}
                         stripedRows
@@ -168,22 +256,96 @@ const AdminPage = () => {
                         <Column field="email" header="Correo" sortable></Column>
                         <Column field="rol" header="Rol" sortable></Column>
                         <Column field="CreatedAt" header="Fecha Registro" sortable body={(rowData) => formatDate(rowData.CreatedAt)}></Column>
-                        <Column 
+                        <Column
                             header="Acciones"
-                            body={(rowData) => (
-                                <div>
-                                    <Button 
-                                      label="Editar" 
-                                      style={{ margin: "5px",}} 
-                                      className="btn btn-primary"
-                                      onClick={() => openEditDialog(rowData)}
-                                    />
-                                </div>
-                            )}
+                            body={(rowData) => {
+                            const items = [
+                                {
+                                    label: 'Editar',
+                                    icon: 'pi pi-pencil',
+                                    command: () => openEditDialog(rowData)
+                                },
+                                {
+                                    label: 'Eliminar',
+                                    icon: 'pi pi-trash',
+                                    command: () => openDeleteDialog(rowData)
+                                }
+                            ];
+                            return (
+                                <SplitButton 
+                                    model={items} 
+                                    icon="pi pi-cog" 
+                                    className="p-button-secondary" 
+                                    style={{ width: '100px' }} 
+                                />
+                            );
+                        }}
                         ></Column>
                     </DataTable>
                 </div>
             </main>
+
+            {/* Dialogo para crear usuario */}
+            <Dialog
+                header="Crear Usuario"
+                visible={createDialogVisible}
+                style={{ width: "50vw" }}
+                onHide={() => setCreateDialogVisible(false)}
+                footer={
+                    <div>
+                        <Button 
+                            label="Crear" 
+                            icon="pi pi-check" 
+                            onClick={handleCreateSubmit} 
+                        />
+                        <Button 
+                            label="Cancelar" 
+                            icon="pi pi-times" 
+                            onClick={() => setCreateDialogVisible(false)} 
+                            className="p-button-secondary" 
+                        />
+                    </div>
+                }
+            >
+                <div className="p-fluid">
+                    <div className="p-field">
+                        <label htmlFor="nombre">Nombre</label>
+                        <InputText
+                            id="nombre"
+                            value={createForm.nombre}
+                            onChange={(e) => setCreateForm({...createForm, nombre: e.target.value})}
+                        />
+                    </div>
+                    <div className="p-field">
+                        <label htmlFor="email">Correo</label>
+                        <InputText
+                            id="email"
+                            value={createForm.email}
+                            onChange={(e) => setCreateForm({...createForm, email: e.target.value})}
+                        />
+                    </div>
+                    <div className="p-field">
+                        <label htmlFor="rol">Rol</label>
+                        <Dropdown
+                            id="rol"
+                            value={createForm.rol}
+                            options={rolesDisponibles}
+                            onChange={(e) => setCreateForm({...createForm, rol: e.value})}
+                            placeholder="Selecciona un rol"
+                        />
+                    </div>
+                    <div className="p-field">
+                        <label htmlFor="password">Contraseña</label>
+                        <InputText
+                            id="password"
+                            type="password"
+                            value={createForm.password}
+                            onChange={(e) => setCreateForm({...createForm, password: e.target.value})}
+                        />
+                    </div>
+                </div>
+            </Dialog>
+
             {/* Dialogo para editar usuarios */}
             <Dialog
                 header="Editar Usuario"

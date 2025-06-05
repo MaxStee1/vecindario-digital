@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Put, Delete, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Put, Delete, Body, UseGuards, Post } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Rol } from '@prisma/client';
@@ -27,7 +27,7 @@ export class AdminController {
   @Roles('admin')
   updateUser(
     @Param('id') id: string,
-    @Body() data: { nombre?: string; direccion?: string },
+    @Body() data: { nombre?: string; direccion?: string, email?: string },
   ) {
     return this.adminService.updateUser(Number(id), data);
   }
@@ -49,4 +49,14 @@ export class AdminController {
     return this.adminService.updateUser(userId, data);
   }
 
+  @Post()
+  createAdmin(@Body() data: {name: string; email: string; password: string}){
+    return this.adminService.createAdmin(data);
+  }
+
+  @Post('users')
+  @Roles('admin')
+  createUser(@Body() data: {nombre: string; email: string; password: string; rol: Rol}) {
+    return this.adminService.createUser(data);
+  }
 }

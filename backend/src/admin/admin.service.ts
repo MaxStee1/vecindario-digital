@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Rol } from '@prisma/client';
+import { hashPassword } from 'src/utils/hash';
 
 @Injectable()
 export class AdminService {
@@ -37,12 +38,13 @@ export class AdminService {
   }
 
   // actualizar datos de usuario
-  async updateUser(userId: number, data: { nombre?: string; direccion?: string }) {
+  async updateUser(userId: number, data: { nombre?: string; direccion?: string, email?: string }) {
     return this.prisma.usuario.update({
         where: { id: userId },
         data: {
             nombre: data.nombre,
             direccion: data.direccion,
+            email: data.email,
             updatedAt: new Date(),
         }
     });
@@ -77,4 +79,53 @@ export class AdminService {
         topLocatarios,
     };
   }
+
+    async createAdmin(data: { name: string; email: string; password: string }) {
+        const hashedPassword = await hashPassword(data.password);
+        return this.prisma.usuario.create({
+            data: {
+                nombre: data.name,
+                email: data.email,
+                contrasenia: hashedPassword,
+                rol: 'admin',
+            },
+        });
+    }
+
+    async createUser(data: { nombre: string; email: string; password: string; rol: Rol }) {
+        const hashedPassword = await hashPassword(data.password);
+        const usuario = await this.prisma.usuario.create({
+            data: {
+                nombre: data.nombre,
+                email: data.email,
+                contrasenia: hashedPassword,
+                rol: data.rol,
+            },
+        });
+        switch (data.rol) {
+            case 'locatario':
+                await this.prisma.locatario.create({
+                  data: {
+                    usuarioId: usuario.id,
+                    nombreTienda: "Tienda de" + usuario.nombre,
+                    direccionTienda: "sin direccion",
+                  },
+                });
+                break;
+            case 'comprador':
+                await this.prisma.comprador.create({
+                  data: {
+                    usuarioId: usuario.id,
+                    direccionEntrega: "sin direccion",
+                  },
+                });
+                break;
+            case 'admin':
+                // No pasa nada, ya que el admin no tiene datos adicionales
+                break;
+            default:
+                throw new Error('Rol no valido');
+        }
+    }
+
 }

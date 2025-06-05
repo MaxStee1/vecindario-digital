@@ -197,16 +197,7 @@ async function main() {
       fechaPedido: new Date(Date.now() - 86400000 * 2), // 2 dias atras
       fechaEntrega: new Date(Date.now() - 86400000 * 1),  // 1 dia atras
       total: 40000,
-      notas: 'dejar en porteria',
-      Valoracion: {
-        create: {
-          compradorId: comprador1.comprador?.id!,
-          locatarioId: locatario1.locatario?.id!,
-          calificacion: 4,
-          comentario: 'todo en buen estado',
-          tipoEntrega: 'envio',
-        }
-      }
+      notas: 'dejar en porteria'
     }
   });
 
