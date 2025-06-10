@@ -158,12 +158,12 @@ async function main() {
   await prisma.carritoItem.createMany({
     data: [
       {
-        usuarioId: comprador1.id,
+        compradorId: comprador1.id,
         productoId: productos[0].id, // Memoria RAM 8 GB
         cantidad: 2,
       },
       {
-        usuarioId: comprador1.id,
+        compradorId: comprador1.id,
         productoId: productos[3].id, // Manzanas
         cantidad: 5,
       },
@@ -174,12 +174,12 @@ async function main() {
   await prisma.carritoItem.createMany({
     data: [
       {
-        usuarioId: comprador2.id,
+        compradorId: comprador2.id,
         productoId: productos[1].id, // Teclado mecanico
         cantidad: 1,
       },
       {
-        usuarioId: comprador2.id,
+        compradorId: comprador2.id,
         productoId: productos[5].id, // Tomates
         cantidad: 10,
       },
@@ -190,7 +190,6 @@ async function main() {
   const pedido1 = await prisma.pedido.create({
     data: {
       compradorId: comprador1.comprador?.id!,
-      locatarioId: locatario1.locatario?.id!,
       estado: 'entregado',
       metodoEntrega: 'envio',
       direccionEntrega: comprador1.comprador?.direccionEntrega,
@@ -204,7 +203,6 @@ async function main() {
   const pedido2 = await prisma.pedido.create({
     data: {
       compradorId: comprador2.comprador?.id!,
-      locatarioId: locatario2.locatario?.id!,
       estado: 'pendiente',
       metodoEntrega: 'envio',
       direccionEntrega: comprador2.comprador?.direccionEntrega,

@@ -2,7 +2,7 @@ import { IsNumber, Min } from 'class-validator';
 
 export class CreateCarritoItemDto {
   @IsNumber()
-  usuarioId!: number;
+  compradorId!: number;
 
   @IsNumber()
   productoId!: number;

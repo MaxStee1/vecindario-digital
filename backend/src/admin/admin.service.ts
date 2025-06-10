@@ -120,6 +120,13 @@ export class AdminService {
                   },
                 });
                 break;
+            case 'repartidor':
+                await this.prisma.repartidor.create({
+                    data: {
+                        usuarioId: usuario.id,
+                    }
+                });
+                break;
             case 'admin':
                 // No pasa nada, ya que el admin no tiene datos adicionales
                 break;

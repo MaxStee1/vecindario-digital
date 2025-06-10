@@ -15,7 +15,7 @@ export class CarritoService {
 
     // Si ya existe, suma la cantidad
     const existente = await this.prisma.carritoItem.findUnique({
-      where: { usuarioId_productoId: { usuarioId: dto.usuarioId, productoId: dto.productoId } },
+      where: { compradorId_productoId: { compradorId: dto.compradorId, productoId: dto.productoId } },
     });
     if (existente) {
       const nuevaCantidad = existente.cantidad + dto.cantidad;
@@ -29,22 +29,22 @@ export class CarritoService {
     return this.prisma.carritoItem.create({ data: dto });
   }
 
-  async eliminarProducto(usuarioId: number, productoId: number) {
+  async eliminarProducto(compradorId: number, productoId: number) {
     return this.prisma.carritoItem.deleteMany({
-      where: { usuarioId, productoId },
+      where: { compradorId, productoId },
     });
   }
 
-  async obtenerCarrito(usuarioId: number) {
+  async obtenerCarrito(compradorId: number) {
     return this.prisma.carritoItem.findMany({
-      where: { usuarioId },
+      where: { compradorId },
       include: { producto: true },
     });
   }
 
-  async actualizarCantidad(usuarioId: number, productoId: number, dto: UpdateCarritoItemDto) {
+  async actualizarCantidad(compradorId: number, productoId: number, dto: UpdateCarritoItemDto) {
     const item = await this.prisma.carritoItem.findUnique({
-      where: { usuarioId_productoId: { usuarioId, productoId } },
+      where: { compradorId_productoId: { compradorId, productoId } },
     });
     if (!item) throw new NotFoundException('Producto no está en el carrito');
     return this.prisma.carritoItem.update({

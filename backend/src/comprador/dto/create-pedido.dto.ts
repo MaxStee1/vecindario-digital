@@ -8,6 +8,9 @@ class PedidoProductoDto {
 
   @IsNumber()
   cantidad!: number;
+
+  @IsNumber()
+  precio!: number;
 }
 
 export class CreatePedidoDto {

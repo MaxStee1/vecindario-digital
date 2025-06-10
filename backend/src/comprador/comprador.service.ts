@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
-import { CreateValoracionDto } from './dto/create-valoracion.dto';
 
 @Injectable()
 export class CompradorService {
@@ -33,13 +32,15 @@ export class CompradorService {
       notas: rest.notas,
       fechaEntrega: rest.fechaEntrega,
       productos: {
-        connect: productos.map(p => ({ id: Number(p.productoId) })),
+        create: productos.map(p => ({
+          producto: { connect: { id: Number(p.productoId) } },
+          cantidad: p.cantidad,
+          precio: p.precio,
+        })),
       },
       comprador: { connect: { usuarioId: userId } },
-      locatario: { connect: { id: locatarioId } },
     },
     include: {
-      locatario: true,
       comprador: true,
       productos: true,
     },
@@ -90,16 +91,6 @@ async getPedidos(userId: number) {
   return this.prisma.pedido.findMany({
     where: { compradorId: comprador.id },
     include: {
-      locatario: {
-        select: {
-          id: true,
-          usuario: {
-            select: {
-              nombre: true,
-            },
-          },
-        },
-      },
       comprador: {
         select: {
           id: true,
