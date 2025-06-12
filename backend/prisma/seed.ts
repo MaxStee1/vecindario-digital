@@ -191,7 +191,6 @@ async function main() {
     data: {
       compradorId: comprador1.comprador?.id!,
       estado: 'entregado',
-      metodoEntrega: 'envio',
       direccionEntrega: comprador1.comprador?.direccionEntrega,
       fechaPedido: new Date(Date.now() - 86400000 * 2), // 2 dias atras
       fechaEntrega: new Date(Date.now() - 86400000 * 1),  // 1 dia atras
@@ -204,7 +203,6 @@ async function main() {
     data: {
       compradorId: comprador2.comprador?.id!,
       estado: 'pendiente',
-      metodoEntrega: 'envio',
       direccionEntrega: comprador2.comprador?.direccionEntrega,
       fechaPedido: new Date(),
       fechaEntrega: new Date(Date.now()),

@@ -1,21 +1,23 @@
 import { useEffect, useState, useRef } from "react";
 import api from "../services/api";
 import LogoutButton from "../components/LogoutButton";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
-import { SplitButton } from "primereact/splitbutton";
 import { Dropdown } from "primereact/dropdown";
+import MetricsSection from "../components/admin/MetricsSection";
+import UsersSection from "../components/admin/UsersSection";
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 
 const rolesDisponibles = [
     { label: "Administrador", value: "admin" },
     { label: "Locatario", value: "locatario" },
     { label: "Comprador", value: "comprador" },
     { label: "Repartidor", value: "repartidor" },
-]
+];
 
 const AdminPage = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -24,6 +26,9 @@ const AdminPage = () => {
         totalUsuarios: 0,
         totalVentas: 0,
         localesActivos: 0,
+        totalCompradores: 0,
+        totalLocatarios: 0,
+        totalRepartidores: 0,
     });
     const [editForm, setEditForm] = useState({
         nombre: '',
@@ -32,11 +37,12 @@ const AdminPage = () => {
     const [editDialogVisible, setEditDialogVisible] = useState(false);
     const [createDialogVisible, setCreateDialogVisible] = useState(false);
     const [createForm, setCreateForm] = useState({
-        nombre: '', 
+        nombre: '',
         email: '',
         password: '',
         rol: ''
-    }); 
+    });
+    const [showUsers, setShowUsers] = useState(false);
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
@@ -52,7 +58,10 @@ const AdminPage = () => {
                 setEstadisticas({
                     totalUsuarios: usuarioRes.data.length,
                     totalVentas: stateRes.data.totalVentas,
-                    localesActivos:stateRes.data.topLocatarios.length
+                    localesActivos: stateRes.data.localesActivos,
+                    totalLocatarios: stateRes.data.totalLocatarios,
+                    totalCompradores: stateRes.data.totalCompradores,
+                    totalRepartidores: stateRes.data.totalRepartidores,
                 });
             } catch (error) {
                 console.error("Error al obtener datos", error);
@@ -63,12 +72,10 @@ const AdminPage = () => {
         fetchData();
     }, []);
 
-    
-
     const handleEditSubmit = async () => {
         try {
-            await api.put(`/admin/users/${selectedUsuario.id}`, editForm,);
-            
+            await api.put(`/admin/users/${selectedUsuario.id}`, editForm);
+
             // Actualizar la lista de usuarios
             const response = await api.get("/admin/users");
             setUsuarios(response.data);
@@ -110,13 +117,13 @@ const AdminPage = () => {
 
     const openDeleteDialog = (usuario: any) => {
         if (window.confirm(`¿Estás seguro de que deseas eliminar al usuario ${usuario.nombre}?`)) {
-            handleDeleteUser(usuario.id);        
+            handleDeleteUser(usuario.id);
         }
     };
 
     const handleDeleteUser = async (userId: number) => {
-        try{
-            await api.delete(`/admin/users/${userId}`);
+        try {
+            await api.put(`/admin/users/delete/${userId}`);
             // Actualizar la lista de usuarios
             const response = await api.get("/admin/users");
             setUsuarios(response.data);
@@ -167,142 +174,70 @@ const AdminPage = () => {
         }
     };
 
-    const contentStyle = {
-        backgroundColor: "rgba(20% 20% 20% / 1)",
-        padding: "1px 20px",
-        borderRadius: "10px",
-        marginBottom:"30px"
-    };
-
     return (
         <div>
             <header>
-                <h2 style={{textAlign:"center", padding:"2rem"}}>Panel de administración</h2>
+                <h2 style={{ textAlign: "center", padding: "2rem" }}>Panel de administración</h2>
+                <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginBottom: "1rem" }}>
+                    <Button 
+                        label="Ver Métricas"
+                        icon={() =><i className="pi pi-chart-bar" style={{color:"#ff6600", marginRight:"0.5rem"}} />}
+                        onClick={() => setShowUsers(false)} 
+                        className={!showUsers ? "p-button-primary" : ""}
+                    />
+                    <Button 
+                        label="Administrar Usuarios" 
+                        icon={() =><i className="pi pi-user" style={{color:"#ff6600", marginRight:"0.5rem"}} />}
+                        onClick={() => setShowUsers(true)} 
+                        className={showUsers ? "p-button-primary" : ""}
+                    />
+                </div>
                 <hr
                     style={{
                         border: "none",
                         height: "2px",
-                        backgroundColor: "#ff6600", // Línea naranja
+                        backgroundColor: "#ff6600",
                         marginBottom: "20px",
-                        width: "80%", // Línea que ocupa todo el ancho
+                        width: "80%",
                     }}
                 />
             </header>
-            
-            <main className="adminMain" style={{ display: "flex", flexDirection: "column", placeItems:"center"}}>
-                {/* Sección de estadísticas */}
-                <h3>Estadísticas</h3>
-                <div 
-                    className="card"
-                    style={{
-                    backgroundColor: "#ffffff",
-                    padding: "20px",
-                    textAlign: "left",
-                    borderRadius: "10px",
-                    width: "30rem",
-                    marginBottom: "20px",
-                    }} >
-                    <div>
-                        <div style={contentStyle}>
-                            <h4>Total de usuarios</h4>
-                            <p>{estadisticas.totalUsuarios}</p>
-                        </div>
-                    </div>
-                    <div>
-                        <div style={contentStyle}>
-                            <h4>Total de ventas</h4>
-                            <p>${estadisticas.totalVentas}</p>
-                        </div>
-                    </div>
-                    <div>
-                        <div style={{...contentStyle, marginBottom:"0px"}}>
-                            <h4>Locales activos</h4>
-                            <p>{estadisticas.localesActivos}</p>
-                        </div>
-                    </div>
-                </div>
 
-                <div style={{ width:"80%", display:"flex", justifyContent:"center", marginBottom:"10px"}}>
-                    <Button
-                        label="Crear Usuario"
-                        icon="pi pi-plus"
-                        className="p-button-success"
-                        onClick={() => setCreateDialogVisible(true)}
+            <main className="adminMain" style={{ display: "flex", flexDirection: "column", placeItems: "center" }}>
+                <Toast ref={toast} />
+                
+                {!showUsers ? (
+                    <MetricsSection estadisticas={estadisticas} />
+                ) : (
+                    <UsersSection 
+                        usuarios={usuarios} 
+                        formatDate={formatDate} 
+                        openEditDialog={openEditDialog} 
+                        openDeleteDialog={openDeleteDialog} 
+                        setCreateDialogVisible={setCreateDialogVisible} 
                     />
-                </div>
-
-                {/* Sección de usuarios */}
-                <h3>Usuarios</h3>
-                <div
-                className="card"
-                style={{
-                    backgroundColor: "rgba(20% 20% 20% / 0.8)",
-                    padding: "20px",
-                    textAlign: "left",
-                    borderRadius: "10px",
-                    width: "80%",
-                }}> 
-                    <DataTable 
-                        value={usuarios}
-                        paginator 
-                        rows={10}
-                        rowsPerPageOptions={[5, 10, 25]}
-                        tableStyle={{ minWidth: '50rem', alignItems:"center" }}
-                        style={{ borderRadius: "10px" }}
-                        stripedRows
-                    >
-                        <Column field="id" header="ID" sortable></Column>
-                        <Column field="nombre" header="Nombre" sortable></Column>
-                        <Column field="email" header="Correo" sortable></Column>
-                        <Column field="rol" header="Rol" sortable></Column>
-                        <Column field="CreatedAt" header="Fecha Registro" sortable body={(rowData) => formatDate(rowData.CreatedAt)}></Column>
-                        <Column
-                            header="Acciones"
-                            body={(rowData) => {
-                            const items = [
-                                {
-                                    label: 'Editar',
-                                    icon: 'pi pi-pencil',
-                                    command: () => openEditDialog(rowData)
-                                },
-                                {
-                                    label: 'Eliminar',
-                                    icon: 'pi pi-trash',
-                                    command: () => openDeleteDialog(rowData)
-                                }
-                            ];
-                            return (
-                                <SplitButton 
-                                    model={items} 
-                                    icon="pi pi-cog" 
-                                    className="p-button-secondary" 
-                                    style={{ width: '100px' }} 
-                                />
-                            );
-                        }}
-                        ></Column>
-                    </DataTable>
-                </div>
+                )}
             </main>
 
             {/* Dialogo para crear usuario */}
             <Dialog
                 header="Crear Usuario"
+                closeIcon={<i className="pi pi-times" style={{ color: "red" }} />}
                 visible={createDialogVisible}
-                style={{ width: "50vw" }}
+                style={{ width: "50vw"}}
                 onHide={() => setCreateDialogVisible(false)}
                 footer={
                     <div>
-                        <Button 
-                            label="Crear" 
-                            icon="pi pi-check" 
-                            onClick={handleCreateSubmit} 
+                        <Button
+                            label="Crear"
+                            icon="pi pi-check"
+                            onClick={handleCreateSubmit}
                         />
-                        <Button 
-                            label="Cancelar" 
-                            icon="pi pi-times" 
-                            onClick={() => setCreateDialogVisible(false)} 
-                            className="p-button-secondary" 
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            onClick={() => setCreateDialogVisible(false)}
+                            className="p-button-secondary"
                         />
                     </div>
                 }
@@ -313,7 +248,7 @@ const AdminPage = () => {
                         <InputText
                             id="nombre"
                             value={createForm.nombre}
-                            onChange={(e) => setCreateForm({...createForm, nombre: e.target.value})}
+                            onChange={(e) => setCreateForm({ ...createForm, nombre: e.target.value })}
                         />
                     </div>
                     <div className="p-field">
@@ -321,7 +256,7 @@ const AdminPage = () => {
                         <InputText
                             id="email"
                             value={createForm.email}
-                            onChange={(e) => setCreateForm({...createForm, email: e.target.value})}
+                            onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
                         />
                     </div>
                     <div className="p-field">
@@ -330,7 +265,7 @@ const AdminPage = () => {
                             id="rol"
                             value={createForm.rol}
                             options={rolesDisponibles}
-                            onChange={(e) => setCreateForm({...createForm, rol: e.value})}
+                            onChange={(e) => setCreateForm({ ...createForm, rol: e.value })}
                             placeholder="Selecciona un rol"
                         />
                     </div>
@@ -340,7 +275,7 @@ const AdminPage = () => {
                             id="password"
                             type="password"
                             value={createForm.password}
-                            onChange={(e) => setCreateForm({...createForm, password: e.target.value})}
+                            onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
                         />
                     </div>
                 </div>
@@ -349,21 +284,22 @@ const AdminPage = () => {
             {/* Dialogo para editar usuarios */}
             <Dialog
                 header="Editar Usuario"
+                closeIcon={<i className="pi pi-times" style={{ color: "red" }} />}
                 visible={editDialogVisible}
                 style={{ width: "50vw" }}
                 onHide={() => setEditDialogVisible(false)}
                 footer={
                     <div>
-                        <Button 
-                            label="Guardar" 
-                            icon="pi pi-check" 
-                            onClick={handleEditSubmit} 
+                        <Button
+                            label="Guardar"
+                            icon="pi pi-check"
+                            onClick={handleEditSubmit}
                         />
-                        <Button 
-                            label="Cancelar" 
-                            icon="pi pi-times" 
-                            onClick={() => setEditDialogVisible(false)} 
-                            className="p-button-secondary" 
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            onClick={() => setEditDialogVisible(false)}
+                            className="p-button-secondary"
                         />
                     </div>
                 }
@@ -374,7 +310,7 @@ const AdminPage = () => {
                         <InputText
                             id="nombre"
                             value={editForm.nombre}
-                            onChange={(e) => setEditForm({...editForm, nombre: e.target.value})}
+                            onChange={(e) => setEditForm({ ...editForm, nombre: e.target.value })}
                         />
                     </div>
                     <div className="p-field">
@@ -382,15 +318,13 @@ const AdminPage = () => {
                         <InputText
                             id="email"
                             value={editForm.email}
-                            onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+                            onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
                         />
                     </div>
                 </div>
             </Dialog>
-            
 
-            
-            <footer style={{ placeItems:'center', padding:"1rem"}} >
+            <footer style={{ placeItems: 'center', padding: "1rem", backgroundColor:"rgba(5% 5% 5% / 20%)", marginTop: "2rem" }} >
                 <LogoutButton />
                 <p>&copy; {new Date().getFullYear()} Comercio Digital y Local</p>
                 <p>Todos los derechos reservados</p>

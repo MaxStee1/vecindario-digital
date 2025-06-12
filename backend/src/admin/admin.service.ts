@@ -10,7 +10,8 @@ export class AdminService {
   // obtener usuarios por rol
   async getUsersByRole(rol: Rol) {
     return this.prisma.usuario.findMany({
-        where: { rol },
+        where: { rol, eliminado: false },
+        orderBy: { id: 'asc' },
         select: {
             id: true,
             nombre: true,
@@ -25,6 +26,8 @@ export class AdminService {
 
   async getAllUsers() {
     return this.prisma.usuario.findMany({
+        where: { eliminado: false },
+        orderBy: { id: 'asc' },
         select: {
             id: true,
             nombre: true,
@@ -33,7 +36,8 @@ export class AdminService {
             direccion: true,
             telefono: true,
             CreatedAt: true,
-        }
+        },
+
     })
   }
 
@@ -50,9 +54,28 @@ export class AdminService {
     });
   }
 
+  // eliminar usuario
+  async deleteUser(userId: number) {
+    const usuario = await this.prisma.usuario.findUnique({
+        where: { id: userId },
+        select: { rol: true },
+    });
+
+    if (!usuario) {
+        throw new Error('Usuario no encontrado');
+    }
+
+    return this.prisma.usuario.update({
+        where: { id: userId },
+        data: { eliminado: true },
+    });
+
+  }
+
+
   // metricas de venta
   async getSalesMetrics() {
-    const [totalVentas, pedidosPorEstado, topLocatarios] = await Promise.all([
+    const [totalVentas, pedidosPorEstado, localesActivos, totalLocatarios, totalCompradores, totalRepartidores] = await Promise.all([
         this.prisma.pedido.aggregate({
             _sum: { total: true },
             where: { estado: 'entregado'},
@@ -63,7 +86,9 @@ export class AdminService {
             _count: { _all: true },
         }),
 
+        /*
         this.prisma.locatario.findMany({
+            where: { usuario: { eliminado: false } },
             take: 5,
             orderBy: { productos: { _count: 'desc'} },
             include: {
@@ -71,12 +96,28 @@ export class AdminService {
                 productos: { select: { nombre: true }},
             },
         }),
+        */
+       this.prisma.locatario.count({
+        where: { usuario: { eliminado: false } }, 
+       }),
+
+        this.prisma.locatario.count({
+            where: { usuario: { eliminado: false } },
+        }),
+
+        this.prisma.comprador.count(),
+
+        this.prisma.repartidor.count(),
+
     ]);
 
     return {
         totalVentas: totalVentas._sum.total || 0,
         pedidosPorEstado,
-        topLocatarios,
+        localesActivos,
+        totalLocatarios,
+        totalCompradores,
+        totalRepartidores,
     };
   }
 

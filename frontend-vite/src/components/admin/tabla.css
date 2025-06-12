@@ -1,0 +1,11 @@
+/*
+.mi-tabla .p-datatable-tbody > tr {
+  background-color: #2a2a2a;
+  color: white;
+}
+*/
+
+.mi-tabla .p-datatable-thead > tr > th {
+  background-color:#1a1a1a;
+  color: white;
+}
