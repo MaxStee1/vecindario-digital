@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsOptional, Min, Max, IsEnum } from 'class-validator';
+/*import { IsNumber, IsString, IsOptional, Min, Max, IsEnum } from 'class-validator';
 import { MetodoEntrega } from '@prisma/client';
 
 export class CreateValoracionDto {
@@ -20,4 +20,4 @@ export class CreateValoracionDto {
 
   @IsEnum(MetodoEntrega)
   tipoEntrega!: MetodoEntrega;
-}
+}*/

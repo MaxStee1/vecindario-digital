@@ -39,7 +39,7 @@ model Usuario {
 
   locatario Locatario?
   comprador Comprador?
-  carrito   CarritoItem[]
+  repartidor Repartidor?
 }
 
 model Locatario {
@@ -57,7 +57,8 @@ model Locatario {
 
   productos    Producto[]
   proveedores  Proveedor[] @relation("ProveedorLocatario")
-  pedidos      Pedido[]
+  pedidos      PedidoLocatario[]
+  categorias  Categoria[]
 }
 
 model Comprador {
@@ -65,33 +66,54 @@ model Comprador {
   usuarioId        Int     @unique
   usuario          Usuario @relation(fields: [usuarioId], references: [id])
   direccionEntrega String?
+  carrito          CarritoItem[]
 
   pedidos      Pedido[]
   valoraciones Valoracion[]
+}
+
+model Repartidor {
+  id          Int      @id @default(autoincrement())
+  usuarioId   Int      @unique
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  disponible  Boolean  @default(true)
+  ubicacionActual String?
+  pedidosAsignados Pedido[]
 }
 
 model Producto {
   id            Int       @id @default(autoincrement())
   nombre        String
   descripcion   String?
-  precio        Decimal   @db.Decimal(10, 2)
+  precio        Int
   stock         Int
   locatarioId   Int
   locatario     Locatario @relation(fields: [locatarioId], references: [id])
   fechaCreacion DateTime  @default(now())
   fechaEdicion  DateTime?  @updatedAt
+  imagenUrl     String?
+  calorias       Int?
 
   carrito CarritoItem[]
-  pedidos Pedido[]      @relation("PedidoProductos")
+  pedidos  PedidoProducto[]
   valoraciones Valoracion[]
+  categorias Categoria[]
+}
+
+model Categoria {
+  id          Int       @id @default(autoincrement())
+  nombre      String
+  locatarioId Int
+  locatario   Locatario @relation(fields: [locatarioId], references: [id])
+  productos   Producto[]
 }
 
 model Pedido {
   id               Int           @id @default(autoincrement())
   compradorId      Int
   comprador        Comprador     @relation(fields: [compradorId], references: [id])
-  locatarioId      Int
-  locatario        Locatario     @relation(fields: [locatarioId], references: [id])
+  repartidorId    Int?
+  repartidor      Repartidor?   @relation(fields: [repartidorId], references: [id])
   direccionEntrega String?
   fechaPedido      DateTime      @default(now())
   fechaEntrega     DateTime?
@@ -99,7 +121,30 @@ model Pedido {
   metodoEntrega    MetodoEntrega
   total            Int
   notas            String?
-  productos        Producto[]    @relation("PedidoProductos")
+  productos        PedidoProducto[]
+  ventasLocatario  PedidoLocatario[]
+}
+
+model PedidoProducto {
+  pedidoId    Int
+  productoId  Int
+  cantidad    Int
+  precio      Int
+  pedido      Pedido    @relation(fields: [pedidoId], references: [id])
+  producto    Producto  @relation(fields: [productoId], references: [id])
+
+  @@id([pedidoId, productoId])
+}
+
+model PedidoLocatario {
+  pedidoId    Int
+  locatarioId Int
+  pedido      Pedido    @relation(fields: [pedidoId], references: [id])
+  locatario   Locatario @relation(fields: [locatarioId], references: [id])
+  total       Int          // total de la venta para el locatario
+  estado      EstadoPedido
+
+  @@id([pedidoId, locatarioId])
 }
 
 model Valoracion {
@@ -116,14 +161,13 @@ model Valoracion {
 
 model CarritoItem {
   id            Int      @id @default(autoincrement())
-  usuarioId     Int
+  compradorId   Int
   productoId    Int
   cantidad      Int      @default(1)
-  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
+  comprador     Comprador  @relation(fields: [compradorId], references: [id])
   producto      Producto @relation(fields: [productoId], references: [id])
-  fechaAgregado DateTime @default(now())
 
-  @@unique([usuarioId, productoId])
+  @@unique([compradorId, productoId])
 }
 
 model Proveedor {
