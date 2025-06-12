@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Post, Body, Get, Param, Put, Delete } from '@nestjs/common';
+import { Controller, UseGuards, Req, Post, Body, Get, Param, Put, Delete } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { RepartidorService } from './repartidor.service';
@@ -6,7 +6,7 @@ import { CreateRepartidorDto } from './dto/create-repartidor.dto';
 import { UpdateRepartidorDto } from './dto/update-repartidor.dto';
 
 @Controller('repartidor')
-//@UseGuards(JwtAuthGuard, RolesGuard) // Descomenta para proteger todas las rutas
+@UseGuards(JwtAuthGuard, RolesGuard) // Descomenta para proteger todas las rutas
 export class RepartidorController {
   constructor(private repartidorService: RepartidorService) {}
 
@@ -24,6 +24,11 @@ export class RepartidorController {
   @Get()
   getRepartidores() {
     return this.repartidorService.getRepartidores();
+  }
+
+  @Get('info')
+  getLocatarioInfo(@Req() req) {
+    return this.repartidorService.getRepartidorInfo(req.user.userId);
   }
 
   // Ver repartidor por id

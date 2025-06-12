@@ -22,6 +22,9 @@ function Login() {
                 case "comprador":
                     navigate("/shop");
                     break;
+                case "repartidor":
+                    navigate("/repartidor");
+                    break;
                 default:
                     navigate("/");
             }
@@ -51,6 +54,9 @@ function Login() {
                     break;
                 case "comprador":
                     navigate("/shop");
+                    break;
+                case "repartidor":
+                    navigate("/repartidor");
                     break;
                 default:
                     navigate("/");

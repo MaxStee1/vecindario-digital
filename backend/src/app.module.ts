@@ -12,6 +12,8 @@ import { ProductosModule } from './productos/productos.module';
 import { CarritoModule } from './carrito/carrito.module';
 import { ProveedorModule } from './proveedor/proveedor.module';
 import { ValoracionModule } from './valoracion/valoracion.module';
+import { RepartidorModule } from './repartidor/repartidor.module';
+import { RepartidorService } from './repartidor/repartidor.service';
 
 @Module({
   imports: [
@@ -24,8 +26,13 @@ import { ValoracionModule } from './valoracion/valoracion.module';
     CarritoModule,
     ProveedorModule,
     ValoracionModule,
+    RepartidorModule,
   ],
   controllers: [AppController],
-  providers: [AppService, LocatariosService, CompradorService],
+  providers: [AppService,
+    LocatariosService,
+    CompradorService,
+    RepartidorService
+  ],
 })
 export class AppModule {}

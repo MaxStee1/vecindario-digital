@@ -12,7 +12,7 @@ async function main() {
   await prisma.usuario.create({
     data: {
       nombre: 'Admin',
-      email: 'admin@admin.com',
+      email: 'ad@admin.com',
       contrasenia: password,
       rol: 'admin',
       telefono: '+56912345678',
@@ -158,12 +158,12 @@ async function main() {
   await prisma.carritoItem.createMany({
     data: [
       {
-        compradorId: comprador1.id,
+        compradorId: comprador1.comprador?.id!,
         productoId: productos[0].id, // Memoria RAM 8 GB
         cantidad: 2,
       },
       {
-        compradorId: comprador1.id,
+        compradorId: comprador1.comprador?.id!,
         productoId: productos[3].id, // Manzanas
         cantidad: 5,
       },
