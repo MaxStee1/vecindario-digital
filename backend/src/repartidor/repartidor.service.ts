@@ -54,6 +54,16 @@ export class RepartidorService {
     return repartidor;
   }
 
+  async updateRepartidorInfo(userId: number, dto: { ubicacionActual?: string }) {
+  const repartidor = await this.prisma.repartidor.findUnique({
+    where: { usuarioId: userId },
+  });
+  if (!repartidor) throw new NotFoundException('Repartidor no encontrado');
+  return this.prisma.repartidor.update({
+    where: { id: repartidor.id },
+    data: dto,
+  });
+  }
   // Actualizar repartidor
   async updateRepartidor(id: number, dto: UpdateRepartidorDto) {
     const repartidor = await this.prisma.repartidor.findUnique({ where: { id } });
