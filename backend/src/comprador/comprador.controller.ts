@@ -3,8 +3,8 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { CompradorService } from './comprador.service';
-import { CreatePedidoDto } from './dto/create-pedido.dto';
-import { CreateValoracionDto } from './dto/create-valoracion.dto';
+//import { CreatePedidoDto } from './dto/create-pedido.dto';
+//import { CreateValoracionDto } from './dto/create-valoracion.dto';
 
 @Controller('comprador')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -22,7 +22,7 @@ export class CompradorController {
     return this.compradorService.updateDireccion(req.user.userId, direccion);
   }
 
-  @Post('pedidos')
+  /*@Post('pedidos')
   crearPedido(@Req() req, @Body() dto: CreatePedidoDto) {
     return this.compradorService.crearPedido(req.user.userId, dto);
   }
@@ -35,7 +35,7 @@ export class CompradorController {
   @Get('productos')
   async getProductosDisponibles() {
     return this.compradorService.getProductosDisponibles();
-  }
+  }*/
 
   /*@Post('valoraciones')
   crearValoracion(@Req() req, @Body() dto: CreateValoracionDto) {

@@ -8,7 +8,7 @@ import AdminPage from "../pages/AdminPage";
 import LocatarioPage from "../pages/LocatarioPage";
 import CompradorPage from "../pages/CompradorPage";
 import PrincipalPage from "../pages/PrincipalPage";
-
+import RepartidorPage from "../pages/RepartidorPage"; 
 
 const AppRoutes = () => {
     return (
@@ -28,13 +28,16 @@ const AppRoutes = () => {
                 <Route path="/locatario" element={<LocatarioPage />} />
             </Route>
 
-            { /* Ruta para compradores */}
+            {/* Ruta para compradores */}
             <Route element={<ProtectedRoute allowedRoles={['comprador']} />}>
-                <Route path="/shop" element={< PrincipalPage />} />
-                <Route path="/carrito" element={< CompradorPage/>} />
+                <Route path="/shop" element={<PrincipalPage />} />
+                <Route path="/carrito" element={<CompradorPage />} />
             </Route>
-            
 
+            {/* Ruta para repartidores */}
+            <Route element={<ProtectedRoute allowedRoles={['repartidor']} />}>
+                <Route path="/repartidor" element={<RepartidorPage />} />
+            </Route>
         </Routes>
     );
 };

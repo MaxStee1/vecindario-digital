@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreatePedidoDto } from './dto/create-pedido.dto';
+//import { CreatePedidoDto } from './dto/create-pedido.dto';
 
 @Injectable()
 export class CompradorService {
@@ -20,7 +20,7 @@ export class CompradorService {
     });
   }
 
-  async crearPedido(userId: number, dto: CreatePedidoDto) {
+  /*async crearPedido(userId: number, dto: CreatePedidoDto) {
   const { locatarioId, productos, ...rest } = dto;
 
   return this.prisma.pedido.create({
@@ -45,7 +45,7 @@ export class CompradorService {
       productos: true,
     },
   });
-}
+}*/
 
   /*async crearValoracion(userId: number, dto: CreateValoracionDto) {
     return this.prisma.valoracion.create({
@@ -60,7 +60,7 @@ export class CompradorService {
     });
   }*/
 
-  async getProductosDisponibles() {
+  /*async getProductosDisponibles() {
     return this.prisma.producto.findMany({
       where: {
         stock: { gt: 0 },
@@ -101,6 +101,6 @@ async getPedidos(userId: number) {
       fechaPedido: 'desc',
     },
   });
-}
+}*/
 
 }
