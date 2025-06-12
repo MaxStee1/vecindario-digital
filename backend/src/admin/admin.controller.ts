@@ -49,9 +49,11 @@ export class AdminController {
     return this.adminService.updateUser(userId, data);
   }
 
-  @Post()
-  createAdmin(@Body() data: {name: string; email: string; password: string}){
-    return this.adminService.createAdmin(data);
+  // eliminar usuario
+  @Put('users/delete/:id')
+  @Roles('admin')
+  deleteUser(@Param('id') id: string) {
+    return this.adminService.deleteUser(Number(id));
   }
 
   @Post('users')

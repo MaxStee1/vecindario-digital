@@ -12,7 +12,7 @@ async function main() {
   await prisma.usuario.create({
     data: {
       nombre: 'Admin',
-      email: 'admin@admin.com',
+      email: 'ad@admin.com',
       contrasenia: password,
       rol: 'admin',
       telefono: '+56912345678',
@@ -158,12 +158,12 @@ async function main() {
   await prisma.carritoItem.createMany({
     data: [
       {
-        compradorId: comprador1.id,
+        compradorId: comprador1.comprador?.id!,
         productoId: productos[0].id, // Memoria RAM 8 GB
         cantidad: 2,
       },
       {
-        compradorId: comprador1.id,
+        compradorId: comprador1.comprador?.id!,
         productoId: productos[3].id, // Manzanas
         cantidad: 5,
       },
@@ -191,7 +191,6 @@ async function main() {
     data: {
       compradorId: comprador1.comprador?.id!,
       estado: 'entregado',
-      metodoEntrega: 'envio',
       direccionEntrega: comprador1.comprador?.direccionEntrega,
       fechaPedido: new Date(Date.now() - 86400000 * 2), // 2 dias atras
       fechaEntrega: new Date(Date.now() - 86400000 * 1),  // 1 dia atras
@@ -204,7 +203,6 @@ async function main() {
     data: {
       compradorId: comprador2.comprador?.id!,
       estado: 'pendiente',
-      metodoEntrega: 'envio',
       direccionEntrega: comprador2.comprador?.direccionEntrega,
       fechaPedido: new Date(),
       fechaEntrega: new Date(Date.now()),

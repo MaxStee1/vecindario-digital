@@ -90,4 +90,6 @@ export class LocatariosController {
     return this.locatariosService.removeProveedor(req.user.userId, Number(proveedorId));
   }
 
+  // Cambiar metodo de entrega
+
 }

@@ -32,6 +32,12 @@ const RepartidorPage = () => {
   const [repartidor, setRepartidor] = useState<{ id: number; nombre: string } | null>(null);
   const [pedidosPendientes, setPedidosPendientes] = useState<Pedido[]>([]);
   const [pedidoAsignado, setPedidoAsignado] = useState<Pedido | null>(null);
+  const [repartidorInfo, setRepartidorInfo] = useState({
+          direccionTienda: '',
+          horarioApertura: '',
+          horarioCierre: '',
+          puntajeVisibilidad: 100
+      });
   const [activeIndex, setActiveIndex] = useState(0);
   const toast = useRef<Toast>(null);
 
@@ -50,8 +56,8 @@ const RepartidorPage = () => {
   const obtenerRepartidor = async () => {
     try {
       // Ajusta este endpoint si tienes uno para "mi perfil repartidor"
-      const res = await api.get("/repartidor/me");
-      setRepartidor({ id: res.data.id, nombre: res.data.usuario.nombre });
+      const res = await api.get("/repartidor/info");
+      setRepartidor(res.data);
     } catch (error) {
       showError("No se pudo obtener el repartidor autenticado.");
     }

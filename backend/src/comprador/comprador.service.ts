@@ -26,7 +26,6 @@ export class CompradorService {
   return this.prisma.pedido.create({
     data: {
       direccionEntrega: rest.direccionEntrega,
-      metodoEntrega: rest.metodoEntrega,
       estado: rest.estado ?? 'pendiente',
       total: rest.total,
       notas: rest.notas,

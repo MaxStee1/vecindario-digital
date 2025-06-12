@@ -18,9 +18,14 @@ export class AuthService {
       where: { email: dto.email },
     });
 
-    // Si no existe o la contraseña no coincide, erro
+    // Si no existe o la contraseña no coincide, error
     if(!user || !(await comparePasswords(dto.password, user.contrasenia))) {
       throw new UnauthorizedException('Credenciales incorrectas');
+    }
+
+    // Si el usuario está eliminado, error
+    if (user.eliminado) {
+      throw new UnauthorizedException('Usuario eliminado');
     }
 
     // generar token JWT

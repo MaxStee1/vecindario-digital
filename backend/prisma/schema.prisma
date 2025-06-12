@@ -36,6 +36,7 @@ model Usuario {
   telefono    String?
   CreatedAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  eliminado    Boolean  @default(false)
 
   locatario Locatario?
   comprador Comprador?
@@ -92,7 +93,6 @@ model Producto {
   fechaCreacion DateTime  @default(now())
   fechaEdicion  DateTime?  @updatedAt
   imagenUrl     String?
-  calorias       Int?
 
   carrito CarritoItem[]
   pedidos  PedidoProducto[]
@@ -100,6 +100,7 @@ model Producto {
   categorias Categoria[]
 }
 
+// podria sere una lista de categorias para no hacer la relacion
 model Categoria {
   id          Int       @id @default(autoincrement())
   nombre      String
@@ -118,7 +119,6 @@ model Pedido {
   fechaPedido      DateTime      @default(now())
   fechaEntrega     DateTime?
   estado           EstadoPedido
-  metodoEntrega    MetodoEntrega
   total            Int
   notas            String?
   productos        PedidoProducto[]
@@ -129,7 +129,7 @@ model PedidoProducto {
   pedidoId    Int
   productoId  Int
   cantidad    Int
-  precio      Int
+  precio      Int   // precio total cantidad * precio unitario
   pedido      Pedido    @relation(fields: [pedidoId], references: [id])
   producto    Producto  @relation(fields: [productoId], references: [id])
 
