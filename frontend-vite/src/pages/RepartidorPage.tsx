@@ -32,12 +32,6 @@ const RepartidorPage = () => {
   const [repartidor, setRepartidor] = useState<{ id: number; nombre: string } | null>(null);
   const [pedidosPendientes, setPedidosPendientes] = useState<Pedido[]>([]);
   const [pedidoAsignado, setPedidoAsignado] = useState<Pedido | null>(null);
-  const [repartidorInfo, setRepartidorInfo] = useState({
-          direccionTienda: '',
-          horarioApertura: '',
-          horarioCierre: '',
-          puntajeVisibilidad: 100
-      });
   const [activeIndex, setActiveIndex] = useState(0);
   const toast = useRef<Toast>(null);
 

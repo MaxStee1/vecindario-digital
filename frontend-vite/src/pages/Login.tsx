@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Toast } from "primereact/toast";
 import api from "../services/api";
+import "../styles/forms.css"
 
 function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const toast = useRef<Toast>(null);
 
     useEffect(() => {
         api.get('/auth/me')
@@ -30,7 +32,7 @@ function Login() {
             }
         })
         .catch(() => {
-            // No hay usuario autenticado, no hacemos nada   
+            console.error("Sesion no inicaida");
         });
     }, [navigate])
 
@@ -63,123 +65,58 @@ function Login() {
             }
         } catch (err) {
             console.error(err);
-            setError("Credenciales invalidas");
+            showError("Credenciales Incorrectas");
+            
         }
     };
 
+    const showError = (message: string) => {
+        toast.current?.clear();
+        toast.current?.show({ severity: 'error', summary: 'Error', detail: message, life: 3000, closable: false});
+    }
+
+
     return (
-        <div
-            style={{
-                backgroundColor: "#ffffff", // Fondo blanco de toda la pantalla
-                minHeight: "100vh", // Altura mínima para cubrir toda la pantalla
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-                padding: "20px",
-            }}
-        >
-            <header style={{ marginBottom: "20px" }}>
-                <h1 style={{ fontSize: "36px", color: "#000000", marginBottom: "10px" }}>Iniciar Sesión</h1>
-                <hr
-                    style={{
-                        border: "none",
-                        height: "2px",
-                        backgroundColor: "#ff6600", // Línea naranja
-                        marginBottom: "20px",
-                        width: "100%", // Línea que ocupa todo el ancho
-                    }}
-                />
+        <div className="principal-div">
+            <Toast ref={toast} />
+            <header className="form-page-header">
+                <h1>Iniciar Sesión</h1>
+                <hr/>
             </header>
             <form
+                className="form-style"
                 onSubmit={handleLogin}
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "15px",
-                    width: "100%",
-                    maxWidth: "500px",
-                    padding: "20px",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    backgroundColor: "#ffffff", // Fondo blanco del formulario
-                }}
             >
                 <div style={{ width: "90%" }}>
-                    <label
-                        style={{
-                            display: "block",
-                            marginBottom: "5px",
-                            fontWeight: "bold",
-                            color: "#000000", // Texto negro
-                        }}
-                    >
+                    <label className="form-label">
                         Email:
                     </label>
                     <input
+                        className="form-input"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            fontSize: "16px",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            backgroundColor: "#f0f0f0", // Fondo gris claro
-                            color: "#000000", // Texto negro
-                        }}
                     />
                 </div>
                 <div style={{ width: "90%" }}>
-                    <label
-                        style={{
-                            display: "block",
-                            marginBottom: "5px",
-                            fontWeight: "bold",
-                            color: "#000000", // Texto negro
-                        }}
-                    >
+                    <label className="form-label">
                         Contraseña:
                     </label>
                     <input
+                        className="form-input"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            fontSize: "16px",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            backgroundColor: "#f0f0f0", // Fondo gris claro
-                            color: "#000000", // Texto negro
-                        }}
                     />
                 </div>
                 <button
-                    type="submit"
-                    style={{
-                        padding: "10px 20px",
-                        fontSize: "16px",
-                        backgroundColor: "#007bff", // Botón azul
-                        color: "white", // Texto blanco
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        transition: "background-color 0.3s ease",
-                    }}
-                >
+                    className="form-button"
+                    type="submit">
                     Login
                 </button>
             </form>
-            {error && (
-                <p style={{ color: "red", marginTop: "15px", fontWeight: "bold" }}>{error}</p>
-            )}
         </div>
     );
 }

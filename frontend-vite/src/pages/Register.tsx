@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { Toast } from "primereact/toast";
 import axios from "axios";
+import "../styles/forms.css"
 
 //pagina de registro
 
@@ -10,86 +12,112 @@ function Register() {
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
     const [rol, setRol] = useState("");
-    const [error, setError] = useState("");
+    const toast = useRef<Toast>(null);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Registering with data: ", { name, email, password, rol });
 
         try {
-            const response = await axios.post("http://localhost:3001/auth/register", {
+            await axios.post("http://localhost:3001/auth/register", {
                 nombre: name,
                 email,
                 password,
-                rol
-            }, {
-                headers: {
-                    "Content-Type": "application/json"  // Asegúrate de incluir este header
-                }
+                rol,
             });
-            const token = response.data.token;
-            localStorage.setItem("token", token);
-            navigate("/");
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Registro exitoso',
+                detail: (
+                    <div>
+                        <span>¡Registro exitoso!</span>
+                        <button
+                            style={{
+                                marginLeft: '1rem',
+                                background: '#2196F3',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                padding: '0.3rem 0.8rem',
+                                cursor: 'pointer'
+                            }}
+                            onClick={() => navigate("/login")}
+                        >
+                            Iniciar sesión
+                        </button>
+                    </div>
+                ),
+                life: 10000,
+                closable: false
+            });
         } catch (error) {
             console.error(error);
-            setError("Error al registrarse");
+            showError("Error al registrarse");
         }
     };
 
+    const showError = (message: string) => {
+        toast.current?.clear();
+        toast.current?.show({ severity: 'error', summary: 'Error', detail: message, life: 3000, closable: false});
+    }
+
     return (
-        <div
-            style={{
-                backgroundColor: "#ffffff", // Fondo blanco de toda la pantalla
-                minHeight: "100vh", // Altura mínima para cubrir toda la pantalla
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-                padding: "20px",
-            }}
-        >
-            <header style={{ marginBottom: "20px" }}>
-                <h1 style={{ fontSize: "36px", color: "#000000", marginBottom: "10px" }}>Registro</h1>
-                <hr
-                    style={{
-                        border: "none",
-                        height: "2px",
-                        backgroundColor: "#ff6600", // Línea naranja
-                        marginBottom: "20px",
-                        width: "100%", // Línea que ocupa todo el ancho
-                    }}
-                />
+        <div className="principal-div">
+            <Toast ref={toast} />
+            <header className="form-page-header">
+                <h1>Registro</h1>
+                <hr/>
             </header>
-            <form onSubmit={handleRegister}>
-                <input
-                    type="text"
-                    placeholder="Nombre"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Contraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <select value={rol} onChange={(e) => setRol(e.target.value)} required>
-                    <option value="">Selecciona un rol</option>
-                    <option value='comprador'>Comprador</option>
-                    <option value='locatario'>Locatario</option>
-                </select>
-                {error && <p style={{ color: "red" }}>{error}</p>}
-                <button type="submit">Registrarse</button>
+            <form 
+                className="form-style"
+                onSubmit={handleRegister}
+            >
+                <div style={{ width: "90%" }}>
+                    <label className="form-label">
+                        Nombre Completo
+                    </label>
+                    <input
+                        className="form-input"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                </div>
+                <div style={{ width: "90%" }}>
+                    <label className="form-label">
+                        Email
+                    </label>
+                    <input
+                        className="form-input"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                <div style={{ width: "90%" }}>
+                    <label className="form-label">
+                        Contraseña
+                    </label>
+                    <input
+                        className="form-input"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
+                <div style={{ width:"50%", marginTop:"20px", marginBottom:"20px" }}>
+                    <select value={rol} onChange={(e) => setRol(e.target.value)} className="form-input" required>
+                        <option value="">Selecciona un rol</option>
+                        <option value='comprador'>Comprador</option>
+                        <option value='locatario'>Locatario</option>
+                        <option value='repartidor'>Repartidor</option>
+                    </select>
+                </div>
+                <button className="form-button" type="submit" >
+                    Registrar
+                </button>
             </form>
         </div>
     );

@@ -59,7 +59,7 @@ export class CompradorService {
     });
   }*/
 
-  /*async getProductosDisponibles() {
+  async getProductosDisponibles() {
     return this.prisma.producto.findMany({
       where: {
         stock: { gt: 0 },
@@ -76,6 +76,7 @@ export class CompradorService {
       },
     });
   }
+  /*
 
 async getPedidos(userId: number) {
   //Busca el id del Comprador usando el usuarioId

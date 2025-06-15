@@ -11,6 +11,6 @@ export class RegisterDto {
   @IsString()
   password!: string;
 
-  @IsEnum(['locatario', 'comprador'], { message: 'Rol no valido' })
+  @IsEnum(['locatario', 'comprador', 'repartidor'], { message: 'Rol no valido' })
   rol!: Rol;
 }
