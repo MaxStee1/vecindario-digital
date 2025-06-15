@@ -78,6 +78,13 @@ export class AuthService {
           },
         });
         break;
+      case 'repartidor':
+        await this.prisma.repartidor.create({
+          data: {
+            usuarioId: user.id,
+          },
+        });
+        break;
       default:
         throw new UnauthorizedException('Rol no valido');
     }

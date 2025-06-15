@@ -105,9 +105,13 @@ export class AdminService {
             where: { usuario: { eliminado: false } },
         }),
 
-        this.prisma.comprador.count(),
+        this.prisma.comprador.count({
+            where: { usuario : { eliminado: false } },
+        }),
 
-        this.prisma.repartidor.count(),
+        this.prisma.repartidor.count({
+            where: { usuario: { eliminado: false } },
+        }),
 
     ]);
 

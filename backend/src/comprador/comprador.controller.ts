@@ -31,11 +31,12 @@ export class CompradorController {
   getPedidos(@Req() req) {
     return this.compradorService.getPedidos(req.user.userId);
   }
-
+  */
   @Get('productos')
-  async getProductosDisponibles() {
+  getProductosDisponibles() {
     return this.compradorService.getProductosDisponibles();
-  }*/
+  }
+  /*
 
   /*@Post('valoraciones')
   crearValoracion(@Req() req, @Body() dto: CreateValoracionDto) {
