@@ -156,7 +156,6 @@ model Valoracion {
   calificacion Int
   comentario   String?
   fecha        DateTime      @default(now())
-  tipoEntrega  MetodoEntrega
 }
 
 model CarritoItem {

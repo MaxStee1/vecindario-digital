@@ -12,11 +12,54 @@ export class LocatariosService {
   async getLocatarioProducts(userId: number) {
     const locatario = await this.prisma.locatario.findUnique({
       where: { usuarioId: userId },
-      include: { productos: true },
+      include: { 
+        productos: {
+          orderBy: { id: 'asc' },
+          include: {
+            valoraciones: true,
+          }
+        } 
+      },
     });
 
     if (!locatario) throw new NotFoundException('locatario no encontrado');
-    return locatario.productos;
+
+    const productosConPromedio = locatario.productos.map(producto => {
+      const valoraciones = producto.valoraciones || [];
+      const promedio = valoraciones.length > 0
+        ? valoraciones.reduce((acc, v) => acc + v.calificacion, 0) / valoraciones.length
+        : null;
+      return {
+        ...producto,
+        promedioCalificacion: promedio,
+      };
+    });
+    return productosConPromedio;
+  }
+
+    async getValoracionesDeProducto(userId: number, productoId: number) {
+    // Verifica que el producto pertenezca al locatario
+    const producto = await this.prisma.producto.findFirst({
+      where: {
+        id: productoId,
+        locatario: { usuarioId: userId }
+      },
+      include: {
+        valoraciones: {
+          include: {
+            comprador: { include: { usuario: true } }
+          }
+        }
+      }
+    });
+    if (!producto) throw new NotFoundException('Producto no encontrado');
+    return producto.valoraciones.map(v => ({
+      id: v.id,
+      calificacion: v.calificacion,
+      comentario: v.comentario,
+      fecha: v.fecha,
+      comprador: v.comprador?.usuario?.nombre || null
+    }));
   }
 
   async getProductById(userId: number, productId: number) {
@@ -53,7 +96,12 @@ export class LocatariosService {
 
     return this.prisma.producto.update({
       where: { id: productId },
-      data: dto,
+      data: {
+        nombre: dto.nombre,
+        descripcion: dto.descripcion,
+        precio: dto.precio,
+        stock: dto.stock,
+      }
     });
   }
 

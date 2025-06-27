@@ -14,8 +14,25 @@ function Register() {
     const [rol, setRol] = useState("");
     const toast = useRef<Toast>(null);
 
+    const isValidGmail = (email: string) => {
+        return /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+    }
+
+    const isValidPassword = (password: string) => {
+        return password.length >= 8;
+    };
+
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!isValidGmail(email)) {
+            showError("El correo debe ser un Gmail válido (ejemplo@gmail.com)");
+            return;
+        }
+        if (!isValidPassword(password)) {
+            showError("La contraseña debe tener al menos 8 caracteres");
+            return;
+        }
 
         try {
             await axios.post("http://localhost:3001/auth/register", {

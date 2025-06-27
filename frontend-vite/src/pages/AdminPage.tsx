@@ -73,6 +73,16 @@ const AdminPage = () => {
     }, []);
 
     const handleEditSubmit = async () => {
+        if (!isValidGmail(editForm.email)) {
+            toast.current?.show({
+                closable: false,
+                severity: "error",
+                summary: "Error",
+                detail: "El correo debe ser un Gmail válido (ejemplo@gmail.com)",
+                life: 3000,
+            });
+            return;
+        }
         try {
             await api.put(`/admin/users/${selectedUsuario.id}`, editForm);
 
@@ -144,7 +154,36 @@ const AdminPage = () => {
         }
     };
 
+    const isValidGmail = (email: string) => {
+        return /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+    };
+
+    const isValidPassword = (password: string) => {
+        return password.length >= 8;
+    };
+
     const handleCreateSubmit = async () => {
+        if (!isValidGmail(createForm.email)) {
+            toast.current?.show({
+                closable: false,
+                severity:"error",
+                summary:"Error",
+                detail:"El correo de ser un gmail valido (ejemplo@gmail.com)",
+                life:3000,
+            })
+            return;
+        }
+        if (!isValidPassword(createForm.password)) {
+            toast.current?.show({
+                closable: false,
+                severity: "error",
+                summary: "Error",
+                detail: "La contraseña debe tener al menos 8 caracteres",
+                life: 3000,
+            });
+            return;
+        }
+
         try {
             await api.post('/admin/users', createForm);
             // Actualizar la lista de usuarios

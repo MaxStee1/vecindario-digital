@@ -14,6 +14,15 @@ interface Producto {
     descripcion: string;
     precio: number;
     stock: number;
+    promedioCalificacion?: number | null;
+}
+
+interface Valoracion {
+    id: number;
+    calificacion: number;
+    comentario: string;
+    fecha: string;
+    comprador: string | null;
 }
 
 interface ProductosPageProps {
@@ -32,6 +41,20 @@ const ProductosPage: React.FC<ProductosPageProps> = ({ nombreTienda, toastRef })
         precio: 0,
         stock: 0,
     });
+    const [valoracionesDialogVisible, setValoracionesDialogVisible] = useState(false);
+    const [valoraciones, setValoraciones] = useState<Valoracion[]>([]);
+    const [productoValorado, setProductoValorado] = useState<Producto | null>(null);
+
+    const verValoraciones = async (producto: Producto) => {
+        try {
+            const response = await api.get(`/locatarios/productos/${producto.id}/valoraciones`);
+            setValoraciones(response.data);
+            setProductoValorado(producto);
+            setValoracionesDialogVisible(true);
+        } catch (error) {
+            showError("No se pudieron obtener las valoraciones.");
+        }
+    };
 
     useEffect(() => {
         fetchProductos();
@@ -123,6 +146,14 @@ const ProductosPage: React.FC<ProductosPageProps> = ({ nombreTienda, toastRef })
                 <Column field="descripcion" header="Descripción" />
                 <Column field="precio" header="Precio" body={(rowData) => `$${rowData.precio}`} />
                 <Column field="stock" header="Stock" />
+                <Column 
+                    header="Calificacion Promedio" 
+                    body={(rowData: Producto) =>
+                        rowData.promedioCalificacion !== null && rowData.promedioCalificacion !== undefined
+                        ? rowData.promedioCalificacion.toFixed(1)
+                        : "Sin calificaciones"
+                    }
+                />
                 <Column
                     header="Acciones"
                     body={(rowData) => (
@@ -141,16 +172,60 @@ const ProductosPage: React.FC<ProductosPageProps> = ({ nombreTienda, toastRef })
                                 icon="pi pi-trash"
                                 onClick={() => deleteProducto(rowData.id)}
                             />
+                            <Button
+                                label="Ver valoraciones"
+                                className="p-button-info"
+                                style={{ height: "3vh"}}
+                                icon="pi pi-star"
+                                onClick={() => verValoraciones(rowData)}
+                            />
                         </div>
                     )}
                 />
             </DataTable>
+            {/* Mostrar valoraciones */}
+            <Dialog
+                header={`Valoracion de "${productoValorado?.nombre}"`}
+                closable={false}
+                visible={valoracionesDialogVisible}
+                style={{ width: "80%" }}
+                onHide={() => setValoracionesDialogVisible(false)}
+                footer={
+                    <Button label="Cerrar" icon="pi pi-times" onClick={() => setValoracionesDialogVisible(false)} />
+                }
+            >
+                {valoraciones.length === 0 ? (
+                    <p>No hay valoraciones para este producto.</p>
+                ) : (
+                    <table style={{ width: "100%", textAlign:"center" }}>
+                        <thead>
+                            <tr>
+                                <th>Calificación</th>
+                                <th>Comentario</th>
+                                <th>Fecha</th>
+                                <th>Comprador</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {valoraciones.map((v) => (
+                                <tr key={v.id}>
+                                    <td>{v.calificacion}</td>
+                                    <td>{v.comentario || "-"}</td>
+                                    <td>{new Date(v.fecha).toLocaleDateString()}</td>
+                                    <td>{v.comprador || "-"}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </Dialog>
 
             {/* Diálogos de edición y creación */}
             <Dialog
                 header="Editar Producto"
                 visible={editDialogVisible}
                 style={{ width: "50vw" }}
+                closable={false}
                 onHide={() => setEditDialogVisible(false)}
                 footer={
                     <div>
@@ -210,6 +285,7 @@ const ProductosPage: React.FC<ProductosPageProps> = ({ nombreTienda, toastRef })
             <Dialog
                 header="Crear Producto"
                 visible={createDialogVisible}
+                closable={false}
                 style={{ width: "50vw" }}
                 onHide={() => setCreateDialogVisible(false)}
                 footer={
