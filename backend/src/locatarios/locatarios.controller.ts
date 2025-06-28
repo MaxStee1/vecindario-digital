@@ -90,6 +90,10 @@ export class LocatariosController {
     return this.locatariosService.removeProveedor(req.user.userId, Number(proveedorId));
   }
 
-  // Cambiar metodo de entrega
+  @Get('productos/:id/valoraciones')
+  @Roles('locatario')
+  getValoracionesDeProductos(@Req() req, @Param('id') id: string) {
+    return this.locatariosService.getValoracionesDeProducto(req.user.userId, +id);
+  }
 
 }

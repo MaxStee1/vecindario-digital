@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
@@ -33,9 +33,35 @@ const PrincipalPage = () => {
     const [productos, setProductos] = useState<Producto[]>([]);
     const [loading, setLoading] = useState(true);
     const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
+    const [comprador, setComprador] = useState<any>(null);
     const [cantidadesTemporales, setCantidadesTemporales] = useState<{[key: number]: number}>({});
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
+
+    // Función para cargar el carrito real del backend
+    const cargarCarrito = useCallback(async (compradorId: number) => {
+        try {
+            const res = await api.get(`/carrito/${compradorId}`);
+            setCarrito(res.data);
+        } catch (error) {
+            setCarrito([]);
+        }
+    }, []);
+
+    // Cargar perfil y carrito al montar
+    useEffect(() => {
+        const fetchPerfilYCarrito = async () => {
+            try {
+                const res = await api.get("/comprador/perfil");
+                setComprador(res.data);
+                await cargarCarrito(res.data.id);
+            } catch {
+                console.error("Error al obtener usuario o carrito");
+            }
+        };
+        fetchPerfilYCarrito();
+        // eslint-disable-next-line
+    }, [cargarCarrito]);
 
     useEffect(() => {
         const fetchProductos = async () => {
@@ -73,9 +99,9 @@ const PrincipalPage = () => {
         }));
     };
 
-    const agregarAlCarrito = (producto: Producto) => {
+    const agregarAlCarrito = async (producto: Producto) => {
         const cantidad = cantidadesTemporales[producto.id] || 0;
-        
+
         if (cantidad <= 0) {
             toast.current?.show({
                 severity: 'warn',
@@ -86,36 +112,44 @@ const PrincipalPage = () => {
             return;
         }
 
-        setCarrito(prev => {
-            const existe = prev.find(item => item.productoId === producto.id);
-            
-            if (existe) {
-                return prev.map(item => 
-                    item.productoId === producto.id 
-                    ? {...item, cantidad: item.cantidad + cantidad} 
-                    : item
-                );
-            }
-            
-            return [...prev, {
+        try {
+            // Obtener el id del comprador autenticado
+            const perfil = await api.get("/comprador/perfil");
+            const compradorId = perfil.data.id;
+
+            // Agregar al carrito en el backend
+            await api.post("/carrito/agregar", {
+                compradorId,
                 productoId: producto.id,
-                cantidad,
-                producto
-            }];
-        });
+                cantidad
+            });
 
-        // Resetear la cantidad temporal
-        setCantidadesTemporales(prev => ({
-            ...prev,
-            [producto.id]: 0
-        }));
+            toast.current?.show({
+                closable: false,
+                severity: 'success',
+                summary: 'Producto agregado',
+                detail: `${cantidad} ${producto.nombre} añadido(s) al carrito`,
+                life: 2000
+            });
 
-        toast.current?.show({
-            severity: 'success',
-            summary: 'Producto agregado',
-            detail: `${cantidad} ${producto.nombre} añadido(s) al carrito`,
-            life: 2000
-        });
+            // Resetear la cantidad temporal
+            setCantidadesTemporales(prev => ({
+                ...prev,
+                [producto.id]: 0
+            }));
+
+            // Recargar el carrito para actualizar el contador
+            await cargarCarrito(compradorId);
+
+        } catch (error: any) {
+            toast.current?.show({
+                closable: false,
+                severity: 'error',
+                summary: 'Error',
+                detail: error?.response?.data?.message || 'No se pudo agregar al carrito',
+                life: 2000
+            });
+        }
     };
 
     const irAlCarrito = () => {
@@ -129,14 +163,16 @@ const PrincipalPage = () => {
             <Toast ref={toast} />
             
             <header className="principal-header">
-                <h1>Bienvenido</h1>
+                <h1>
+                    {comprador ? `Bienvenido ${comprador.usuario.nombre}` : 'Bienvenido'}
+                </h1>
                 <Button 
                     label={`Carrito (${totalItemsCarrito})`}
                     icon="pi pi-shopping-cart"
                     onClick={irAlCarrito}
                     className="p-button-rounded p-button-success"
                     disabled={totalItemsCarrito === 0}
-                />
+                />     
             </header>
             <hr
                     style={{

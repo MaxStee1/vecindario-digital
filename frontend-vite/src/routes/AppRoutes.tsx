@@ -6,9 +6,9 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import AdminPage from "../pages/AdminPage";
 import LocatarioPage from "../pages/LocatarioPage";
-import CompradorPage from "../pages/CompradorPage";
 import PrincipalPage from "../pages/PrincipalPage";
 import RepartidorPage from "../pages/RepartidorPage"; 
+import CarritoPage from "../pages/CarritoPage";
 
 const AppRoutes = () => {
     return (
@@ -31,7 +31,7 @@ const AppRoutes = () => {
             {/* Ruta para compradores */}
             <Route element={<ProtectedRoute allowedRoles={['comprador']} />}>
                 <Route path="/shop" element={<PrincipalPage />} />
-                <Route path="/carrito" element={<CompradorPage />} />
+                <Route path="/carrito" element={<CarritoPage />} />
             </Route>
 
             {/* Ruta para repartidores */}
