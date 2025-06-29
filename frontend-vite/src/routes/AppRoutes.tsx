@@ -9,6 +9,7 @@ import LocatarioPage from "../pages/LocatarioPage";
 import PrincipalPage from "../pages/PrincipalPage";
 import RepartidorPage from "../pages/RepartidorPage"; 
 import CarritoPage from "../pages/CarritoPage";
+import MisPedidosPage from "../pages/MisPedidosPage";
 
 const AppRoutes = () => {
     return (
@@ -32,6 +33,7 @@ const AppRoutes = () => {
             <Route element={<ProtectedRoute allowedRoles={['comprador']} />}>
                 <Route path="/shop" element={<PrincipalPage />} />
                 <Route path="/carrito" element={<CarritoPage />} />
+                <Route path="/mis-pedidos" element={<MisPedidosPage />} />
             </Route>
 
             {/* Ruta para repartidores */}

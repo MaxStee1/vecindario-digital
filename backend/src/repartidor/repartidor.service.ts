@@ -99,7 +99,9 @@ export class RepartidorService {
       },
       include: {
         comprador: { include: { usuario: true } },
-        productos: true,
+        productos: {
+          include: { producto: true }
+        }
       },
       orderBy: { fechaPedido: 'asc' },
     });
@@ -134,7 +136,9 @@ export class RepartidorService {
       },
       include: {
         comprador: { include: { usuario: true } },
-        productos: true,
+        productos: {
+          include: { producto: true }
+        }
       },
       orderBy: { fechaPedido: 'asc' },
     });

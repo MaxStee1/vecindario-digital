@@ -173,6 +173,7 @@ const PrincipalPage = () => {
                     className="p-button-rounded p-button-success"
                     disabled={totalItemsCarrito === 0}
                 />     
+                <Button label="Mis Pedidos" onClick={() => navigate('/mis-pedidos')} />
             </header>
             <hr
                     style={{

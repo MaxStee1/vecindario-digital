@@ -1,9 +1,8 @@
-/*import { IsNumber, IsString, IsOptional, Min, Max, IsEnum } from 'class-validator';
-import { MetodoEntrega } from '@prisma/client';
+import { IsNumber, IsString, IsOptional, Min, Max } from 'class-validator';
 
 export class CreateValoracionDto {
   @IsNumber()
-  locatarioId!: number;
+  productoId!: number;
 
   @IsNumber()
   @Min(1)
@@ -16,8 +15,5 @@ export class CreateValoracionDto {
 
   @IsOptional()
   @IsNumber()
-  pedidoId?: number;
-
-  @IsEnum(MetodoEntrega)
-  tipoEntrega!: MetodoEntrega;
-}*/
+  pedidoId?: number; // validar que el producto fue comprado
+}

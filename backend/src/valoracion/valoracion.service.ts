@@ -15,7 +15,6 @@ export class ValoracionService {
             comentario: true,
             calificacion: true,
             fecha: true,
-            tipoEntrega: true,
             comprador: {
                 select: {
                     id: true,
@@ -60,7 +59,6 @@ export class ValoracionService {
             productoId: createValoracionDto.productoId,
             calificacion: createValoracionDto.calificacion,
             comentario: createValoracionDto.comentario,
-            tipoEntrega: createValoracionDto.tipoEntrega,
             fecha: new Date(),
         },
     });

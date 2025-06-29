@@ -38,7 +38,9 @@ export class CarritoService {
   async obtenerCarrito(compradorId: number) {
     return this.prisma.carritoItem.findMany({
       where: { compradorId },
-      include: { producto: true },
+      include: { 
+        producto: { include: { locatario: true } } 
+      },
     });
   }
 
