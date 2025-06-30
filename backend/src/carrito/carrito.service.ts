@@ -54,4 +54,10 @@ export class CarritoService {
       data: dto,
     });
   }
+
+  async vaciarCarrito(compradorId: number) {
+    return this.prisma.carritoItem.deleteMany({
+      where: { compradorId },
+    });
+  }
 }

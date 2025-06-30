@@ -120,7 +120,7 @@ export class RepartidorService {
       where: { id: pedidoId },
       data: {
         repartidorId,
-        estado: 'enviado',
+        estado: 'enReparto',
       },
     });
   }
@@ -132,7 +132,7 @@ export class RepartidorService {
     return this.prisma.pedido.findMany({
       where: {
         repartidorId,
-        estado: { in: ['enviado', 'pendiente'] },
+        estado: { in: ['enReparto', 'pendiente'] },
       },
       include: {
         comprador: { include: { usuario: true } },

@@ -21,7 +21,7 @@ enum MetodoEntrega {
 
 enum EstadoPedido {
   pendiente
-  enviado
+  enReparto
   entregado
   cancelado
 }
