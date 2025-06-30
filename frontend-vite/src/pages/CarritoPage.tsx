@@ -61,12 +61,15 @@ const CarritoPage = () => {
   };
 
   const confirmarCompra = async () => {
+    if (!window.confirm("¿Estás seguro de que deseas realizar la compra?")) {
+      return;
+    }
     try {
       const grupos = agruparPorLocatario(carrito);
 
       for (const grupo of grupos) {
-        const metodoEntrega = grupo.locatario.formatoEntrega || "envio"; // "evio" por defecto
-        const direccionEntrega = "Dirección de ejemplo"; // O pide al usuario
+        const metodoEntrega = grupo.locatario.formatoEntrega || "envio";
+        const direccionEntrega = "Dirección de ejemplo";
 
         const productos = grupo.productos.map(item => ({
           productoId: item.producto.id,
@@ -84,6 +87,8 @@ const CarritoPage = () => {
       }
 
       mostrarToast("success", "Compra confirmada");
+      // Vaciar el carrito en el backend
+      await api.delete(`/carrito/vaciar/${compradorId}`);
       setCarrito([]);
       cargarCarrito();
     } catch (error) {

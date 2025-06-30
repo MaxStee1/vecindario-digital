@@ -1,0 +1,31 @@
+.separador-naranja {
+  border: none;
+  height: 2px;
+  background-color: #ff6600;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.loading-spinner {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.pedidos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
+}
+
+.pedido-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  flex: 1 1 320px;
+  max-width: 400px;
+  min-width: 280px;
+  box-sizing: border-box;
+}

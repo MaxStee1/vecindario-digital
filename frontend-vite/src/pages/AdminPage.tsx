@@ -29,6 +29,8 @@ const AdminPage = () => {
         totalCompradores: 0,
         totalLocatarios: 0,
         totalRepartidores: 0,
+        pedidosPorEstado: [],
+        topProductos: [],
     });
     const [editForm, setEditForm] = useState({
         nombre: '',
@@ -48,27 +50,24 @@ const AdminPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Obtener usuarios
                 const usuarioRes = await api.get('/admin/users');
-
-                // obtener estadisticas
                 const stateRes = await api.get('/admin/metrics');
-
                 setUsuarios(usuarioRes.data);
                 setEstadisticas({
-                    totalUsuarios: usuarioRes.data.length,
+                    totalUsuarios: stateRes.data.totalUsuarios,
                     totalVentas: stateRes.data.totalVentas,
                     localesActivos: stateRes.data.localesActivos,
-                    totalLocatarios: stateRes.data.totalLocatarios,
                     totalCompradores: stateRes.data.totalCompradores,
+                    totalLocatarios: stateRes.data.totalLocatarios,
                     totalRepartidores: stateRes.data.totalRepartidores,
+                    pedidosPorEstado: stateRes.data.pedidosPorEstado,
+                    topProductos: stateRes.data.topProductos,
                 });
             } catch (error) {
                 console.error("Error al obtener datos", error);
                 alert("Hubo un problema al cargar los datos. Por favor, intenta nuevamente.");
             }
         };
-
         fetchData();
     }, []);
 
