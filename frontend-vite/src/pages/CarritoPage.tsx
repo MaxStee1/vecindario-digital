@@ -61,11 +61,36 @@ const CarritoPage = () => {
   };
 
   const confirmarCompra = async () => {
+    if (!window.confirm("¿Estás seguro de que deseas realizar la compra?")) {
+      return;
+    }
     try {
-      // Aquí deberás enviar los datos del carrito al endpoint de pedidos
-      // await api.post("/comprador/pedidos", { productos: carrito });
-      mostrarToast("success", "Compra confirmada (simulado)");
+      const grupos = agruparPorLocatario(carrito);
+
+      for (const grupo of grupos) {
+        const metodoEntrega = grupo.locatario.formatoEntrega || "envio";
+        const direccionEntrega = "Dirección de ejemplo";
+
+        const productos = grupo.productos.map(item => ({
+          productoId: item.producto.id,
+          cantidad: item.cantidad,
+          precio: item.producto.precio,
+        }));
+
+        await api.post("/comprador/pedidos", {
+          locatarioId: grupo.locatario.id,
+          metodoEntrega,
+          direccionEntrega,
+          productos,
+          total: productos.reduce((acc, p) => acc + p.precio * p.cantidad, 0),
+        });
+      }
+
+      mostrarToast("success", "Compra confirmada");
+      // Vaciar el carrito en el backend
+      await api.delete(`/carrito/vaciar/${compradorId}`);
       setCarrito([]);
+      cargarCarrito();
     } catch (error) {
       mostrarToast("error", "No se pudo confirmar la compra");
     }
@@ -84,7 +109,25 @@ const CarritoPage = () => {
     );
   };
 
+  // Agrupa los productos del carrito por locatario
+  const agruparPorLocatario = (carrito) => {
+    const grupos = {};
+    carrito.forEach(item => {
+      const locatarioId = item.producto.locatario.id;
+      if (!grupos[locatarioId]) {
+        grupos[locatarioId] = {
+          locatario: item.producto.locatario,
+          productos: []
+        };
+      }
+      grupos[locatarioId].productos.push(item);
+    });
+    return Object.values(grupos);
+  };
+
   if (loading) return <div>Cargando...</div>;
+
+  const carritoAgrupado = agruparPorLocatario(carrito);
 
   return (
     <div className="p-4">
@@ -94,34 +137,39 @@ const CarritoPage = () => {
         <div>El carrito está vacío.</div>
       ) : (
         <div>
-          {carrito.map((item) => (
-            <div
-              key={item.producto.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "1rem",
-                borderBottom: "1px solid #eee",
-                paddingBottom: "0.5rem",
-              }}
-            >
-              <span style={{ flex: 2 }}>{item.producto.nombre}</span>
-              <span style={{ flex: 1 }}>${item.producto.precio}</span>
-              <InputNumber
-                value={item.cantidad}
-                min={1}
-                onValueChange={(e) =>
-                  actualizarCantidad(item.producto.id, e.value)
-                }
-                style={{ width: "60px", marginRight: "1rem" }}
-              />
-              <Button
-                label="Eliminar"
-                icon="pi pi-trash"
-                severity="danger"
-                onClick={() => eliminarProducto(item.producto.id)}
-                size="small"
-              />
+          {carritoAgrupado.map((grupo) => (
+            <div key={grupo.locatario.id} style={{ marginBottom: "2rem" }}>
+              <h3>{grupo.locatario.nombre}</h3>
+              {grupo.productos.map((item) => (
+                <div
+                  key={item.producto.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "1rem",
+                    borderBottom: "1px solid #eee",
+                    paddingBottom: "0.5rem",
+                  }}
+                >
+                  <span style={{ flex: 2 }}>{item.producto.nombre}</span>
+                  <span style={{ flex: 1 }}>${item.producto.precio}</span>
+                  <InputNumber
+                    value={item.cantidad}
+                    min={1}
+                    onValueChange={(e) =>
+                      actualizarCantidad(item.producto.id, e.value)
+                    }
+                    style={{ width: "60px", marginRight: "1rem" }}
+                  />
+                  <Button
+                    label="Eliminar"
+                    icon="pi pi-trash"
+                    severity="danger"
+                    onClick={() => eliminarProducto(item.producto.id)}
+                    size="small"
+                  />
+                </div>
+              ))}
             </div>
           ))}
           <div style={{ marginTop: "1rem", fontWeight: "bold" }}>

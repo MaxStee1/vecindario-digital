@@ -75,45 +75,57 @@ export class AdminService {
 
   // metricas de venta
   async getSalesMetrics() {
-    const [totalVentas, pedidosPorEstado, localesActivos, totalLocatarios, totalCompradores, totalRepartidores] = await Promise.all([
+    const [
+        totalVentas,
+        pedidosPorEstado,
+        localesActivos,
+        totalLocatarios,
+        totalCompradores,
+        totalRepartidores,
+        totalUsuarios,
+        topProductos
+    ] = await Promise.all([
         this.prisma.pedido.aggregate({
             _sum: { total: true },
             where: { estado: 'entregado'},
         }),
-
         this.prisma.pedido.groupBy({
             by: ['estado'],
             _count: { _all: true },
         }),
-
-        /*
-        this.prisma.locatario.findMany({
-            where: { usuario: { eliminado: false } },
-            take: 5,
-            orderBy: { productos: { _count: 'desc'} },
-            include: {
-                usuario: { select: { nombre: true } },
-                productos: { select: { nombre: true }},
-            },
+        this.prisma.locatario.count({
+            where: { usuario: { eliminado: false } }, 
         }),
-        */
-       this.prisma.locatario.count({
-        where: { usuario: { eliminado: false } }, 
-       }),
-
         this.prisma.locatario.count({
             where: { usuario: { eliminado: false } },
         }),
-
         this.prisma.comprador.count({
             where: { usuario : { eliminado: false } },
         }),
-
         this.prisma.repartidor.count({
             where: { usuario: { eliminado: false } },
         }),
-
+        this.prisma.usuario.count({
+            where: { eliminado: false }
+        }),
+        // Top 5 productos más vendidos
+        this.prisma.pedidoProducto.groupBy({
+            by: ['productoId'],
+            _sum: { cantidad: true },
+            orderBy: { _sum: { cantidad: 'desc' } },
+            take: 5,
+        })
     ]);
+
+    // Obtener nombres de productos para el top
+    const productoIds = topProductos.map(tp => tp.productoId);
+    const productos = await this.prisma.producto.findMany({
+        where: { id: { in: productoIds } }
+    });
+    const topProductosConNombre = topProductos.map(tp => ({
+        nombre: productos.find(p => p.id === tp.productoId)?.nombre || 'Desconocido',
+        cantidadVendida: tp._sum.cantidad || 0
+    }));
 
     return {
         totalVentas: totalVentas._sum.total || 0,
@@ -122,6 +134,8 @@ export class AdminService {
         totalLocatarios,
         totalCompradores,
         totalRepartidores,
+        totalUsuarios,
+        topProductos: topProductosConNombre
     };
   }
 

@@ -1,15 +1,26 @@
 import React from "react";
 import { Chart } from 'primereact/chart';
 
+interface PedidoPorEstado {
+    estado: string;
+    _count: { _all: number };
+}
+
+interface ProductoMasVendido {
+    nombre: string;
+    cantidadVendida: number;
+}
+
 interface MetricsProps {
     estadisticas: {
         totalUsuarios: number,
         totalVentas: number,
-        localesActivos:number,
+        localesActivos: number,
         totalLocatarios: number;
         totalCompradores: number;
         totalRepartidores: number;
-
+        pedidosPorEstado?: PedidoPorEstado[];
+        topProductos?: ProductoMasVendido[];
     };
 }
 
@@ -75,6 +86,22 @@ const MetricsSection: React.FC<MetricsProps> = ({ estadisticas }) => {
             }
         }
     };
+
+    // Gráfico de pedidos por estado
+    const pedidosPorEstado = estadisticas.pedidosPorEstado || [];
+    const pedidosEstadoData = {
+        labels: pedidosPorEstado.map(e => e.estado),
+        datasets: [
+            {
+                label: 'Cantidad de Pedidos',
+                backgroundColor: '#42A5F5',
+                data: pedidosPorEstado.map(e => e._count._all)
+            }
+        ]
+    };
+
+    // Tabla de productos más vendidos
+    const topProductos = estadisticas.topProductos || [];
 
     const metricCardStyle = {
         backgroundColor: "#242424", 
@@ -143,6 +170,47 @@ const MetricsSection: React.FC<MetricsProps> = ({ estadisticas }) => {
                         Nota: Las ventas están representadas en miles para mejor visualización
                     </p>
                 </div>
+            </div>
+
+            {/* Gráfico de pedidos por estado */}
+            <div style={{
+                marginTop: "30px",
+                backgroundColor: "#242424",
+                padding: "20px",
+                borderRadius: "10px",
+                boxShadow: "0 0px 8px rgb(0 0 0 / 40%)",
+                minWidth: "300px"
+            }}>
+                <h3 style={{ textAlign: "center" }}>Pedidos por Estado</h3>
+                <Chart type="bar" data={pedidosEstadoData} style={{ width: '100%' }} />
+            </div>
+
+            {/* Tabla de productos más vendidos */}
+            <div style={{
+                marginTop: "30px",
+                backgroundColor: "#242424",
+                padding: "20px",
+                borderRadius: "10px",
+                boxShadow: "0 0px 8px rgb(0 0 0 / 40%)",
+                minWidth: "300px"
+            }}>
+                <h3 style={{ textAlign: "center" }}>Top 5 Productos Más Vendidos</h3>
+                <table style={{ width: "100%", color: "white", borderCollapse: "collapse" }}>
+                    <thead>
+                        <tr>
+                            <th style={{ borderBottom: "1px solid #666" }}>Producto</th>
+                            <th style={{ borderBottom: "1px solid #666" }}>Cantidad Vendida</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {topProductos.map((prod, idx) => (
+                            <tr key={idx}>
+                                <td style={{ padding: "8px" }}>{prod.nombre}</td>
+                                <td style={{ padding: "8px", textAlign: "center" }}>{prod.cantidadVendida}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

@@ -38,7 +38,9 @@ export class CarritoService {
   async obtenerCarrito(compradorId: number) {
     return this.prisma.carritoItem.findMany({
       where: { compradorId },
-      include: { producto: true },
+      include: { 
+        producto: { include: { locatario: true } } 
+      },
     });
   }
 
@@ -50,6 +52,12 @@ export class CarritoService {
     return this.prisma.carritoItem.update({
       where: { id: item.id },
       data: dto,
+    });
+  }
+
+  async vaciarCarrito(compradorId: number) {
+    return this.prisma.carritoItem.deleteMany({
+      where: { compradorId },
     });
   }
 }

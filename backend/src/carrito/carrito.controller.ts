@@ -33,4 +33,9 @@ export class CarritoController {
   ) {
     return this.carritoService.actualizarCantidad(+usuarioId, +productoId, dto);
   }
+
+  @Delete('vaciar/:usuarioId')
+  vaciarCarrito(@Param('usuarioId') usuarioId: string) {
+    return this.carritoService.vaciarCarrito(+usuarioId);
+  }
 }

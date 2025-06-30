@@ -1,20 +1,18 @@
-import { IsString, IsNumber, IsOptional, IsEnum } from "class-validator";
-import { MetodoEntrega } from "@prisma/client";
+import { IsString, IsNumber, IsOptional, Min, Max } from "class-validator";
 
 export class CreateValoracionDto {
   @IsNumber()
-  readonly compradorId!: number;
+  compradorId!: number;
 
   @IsNumber()
-  readonly productoId!: number;
+  productoId!: number;
 
   @IsNumber()
-  readonly calificacion!: number;
+  @Min(1)
+  @Max(5)
+  calificacion!: number;
 
   @IsOptional()
   @IsString()
-  readonly comentario?: string;
-
-  @IsEnum(MetodoEntrega)
-  readonly tipoEntrega!: MetodoEntrega;
+  comentario?: string;
 }

@@ -1,4 +1,4 @@
-/*import { IsNumber, IsString, IsEnum, IsOptional, IsArray, ValidateNested } from 'class-validator';
+import { IsNumber, IsString, IsEnum, IsOptional, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { MetodoEntrega, EstadoPedido } from '@prisma/client';
 
@@ -43,4 +43,4 @@ export class CreatePedidoDto {
   @ValidateNested({ each: true })
   @Type(() => PedidoProductoDto)
   productos!: PedidoProductoDto[];
-}*/
+}

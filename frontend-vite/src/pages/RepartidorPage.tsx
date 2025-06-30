@@ -35,7 +35,6 @@ const RepartidorPage = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const toast = useRef<Toast>(null);
 
-  // Obtén el repartidor autenticado (ajusta según tu backend)
   useEffect(() => {
     obtenerRepartidor();
   }, []);
@@ -49,7 +48,6 @@ const RepartidorPage = () => {
 
   const obtenerRepartidor = async () => {
     try {
-      // Ajusta este endpoint si tienes uno para "mi perfil repartidor"
       const res = await api.get("/repartidor/info");
       setRepartidor(res.data);
     } catch (error) {
@@ -70,7 +68,6 @@ const RepartidorPage = () => {
     try {
       if (!repartidor) return;
       const res = await api.get(`/repartidor/${repartidor.id}/pedidos`);
-      // Solo puede tener uno asignado a la vez (por lógica de negocio)
       setPedidoAsignado(res.data && res.data.length > 0 ? res.data[0] : null);
     } catch (error) {
       showError("No se pudo cargar el pedido asignado.");
@@ -111,63 +108,63 @@ const RepartidorPage = () => {
 
   return (
     <div>
-      <Toast ref={toast} />
       <header>
-        <h2 style={{ padding: "1rem", textAlign: "center", marginBottom: "0" }}>
+        <h2 style={{ textAlign: "center", padding: "2rem" }}>
           Panel de <strong>Repartidor</strong>
         </h2>
-        <p style={{ padding: "1rem", textAlign: "center", marginTop: "0" }}>
+        <p style={{ textAlign: "center", marginTop: "-1.5rem", marginBottom: "1.5rem" }}>
           Bienvenido, <strong>{repartidor?.nombre || "..."}</strong>
         </p>
+        <hr
+          style={{
+            border: "none",
+            height: "2px",
+            backgroundColor: "#ff6600",
+            marginBottom: "20px",
+            width: "80%",
+          }}
+        />
       </header>
 
-      <main style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        width: "100%",
-        padding: "0 2rem"
-      }}>
-        <div style={{ width: "100%", maxWidth: "1200px" }}>
-          <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}
-            style={{ borderRadius: "10px", margin: "1rem", placeItems: "center" }}
-          >
+      <main style={{ display: "flex", flexDirection: "column", placeItems: "center" }}>
+        <Toast ref={toast} />
+        <div style={{ width: "100%", maxWidth: "1000px"}}>
+          <TabView
+            style={{ borderRadius:"10px", placeItems:"center", marginBottom:"15px"}}
+            activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}>
             <TabPanel header="Pedidos Pendientes" leftIcon="pi pi-clock mr-2">
               <Card>
                 {pedidosPendientes.length === 0 ? (
                   <p style={{ color: "gray" }}>No hay pedidos pendientes.</p>
                 ) : (
-                  pedidosPendientes.map((pedido) => (
-                    <div key={pedido.id} style={{
-                      border: "1px solid var(--surface-border)",
-                      borderRadius: "8px",
-                      padding: "1rem",
-                      marginBottom: "1rem"
-                    }}>
-                      <h4>Pedido #{pedido.id}</h4>
-                      <p><strong>Cliente:</strong> {pedido.comprador.usuario.nombre} ({pedido.comprador.usuario.email})</p>
-                      <p><strong>Dirección de entrega:</strong> {pedido.direccionEntrega}</p>
-                      <p><strong>Fecha:</strong> {new Date(pedido.fechaPedido).toLocaleString()}</p>
-                      <p><strong>Total:</strong> ${pedido.total}</p>
-                      <div>
-                        <strong>Productos:</strong>
-                        <ul>
-                          {pedido.productos.map((prod, idx) => (
-                            <li key={idx}>
-                              {prod.producto.nombre} x{prod.cantidad} (${prod.precio})
-                            </li>
-                          ))}
-                        </ul>
+                  <div className="pedidos-grid">
+                    {pedidosPendientes.map((pedido) => (
+                      <div key={pedido.id} className="pedido-card">
+                        <h4>Pedido #{pedido.id}</h4>
+                        <p><strong>Cliente:</strong> {pedido.comprador.usuario.nombre} ({pedido.comprador.usuario.email})</p>
+                        <p><strong>Dirección de entrega:</strong> {pedido.direccionEntrega}</p>
+                        <p><strong>Fecha:</strong> {new Date(pedido.fechaPedido).toLocaleString()}</p>
+                        <p><strong>Total:</strong> ${pedido.total}</p>
+                        <div>
+                          <strong>Productos:</strong>
+                          <ul>
+                            {pedido.productos.map((prod, idx) => (
+                              <li key={idx}>
+                                {prod.producto.nombre} x{prod.cantidad} (${prod.precio})
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <Button
+                          label="Aceptar pedido"
+                          icon="pi pi-check"
+                          onClick={() => aceptarPedido(pedido.id)}
+                          disabled={!!pedidoAsignado}
+                          style={{ marginTop: "1rem" }}
+                        />
                       </div>
-                      <Button
-                        label="Aceptar pedido"
-                        icon="pi pi-check"
-                        onClick={() => aceptarPedido(pedido.id)}
-                        disabled={!!pedidoAsignado}
-                        style={{ marginTop: "1rem" }}
-                      />
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 )}
                 {pedidoAsignado && (
                   <div style={{ color: "orange", marginTop: "1rem" }}>
@@ -177,7 +174,7 @@ const RepartidorPage = () => {
               </Card>
             </TabPanel>
             <TabPanel header="Mi Pedido Asignado" leftIcon="pi pi-truck mr-2">
-              <Card>
+              <Card style={{ placeItems:"center"}}>
                 {!pedidoAsignado ? (
                   <p style={{ color: "gray" }}>No tienes pedidos asignados actualmente.</p>
                 ) : (
@@ -211,9 +208,9 @@ const RepartidorPage = () => {
         </div>
       </main>
 
-      <footer style={{ placeItems: 'center', padding: "1rem", textAlign: "center" }}>
+      <footer style={{ placeItems: 'center', padding: "1rem", backgroundColor: "rgba(5% 5% 5% / 20%)", marginTop: "2rem", textAlign: "center" }}>
         <LogoutButton />
-        <p>&copy; 2023 Comercio Digital y Local</p>
+        <p>&copy; {new Date().getFullYear()} Comercio Digital y Local</p>
         <p>Todos los derechos reservados</p>
       </footer>
     </div>
