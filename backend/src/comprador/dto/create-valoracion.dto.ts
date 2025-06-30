@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsOptional, Min, Max } from 'class-validator';
+import { IsNumber, IsString, IsOptional, Min, Max, IsIn } from 'class-validator';
 
 export class CreateValoracionDto {
   @IsNumber()
@@ -16,4 +16,6 @@ export class CreateValoracionDto {
   @IsOptional()
   @IsNumber()
   pedidoId?: number; // validar que el producto fue comprado
+
+  
 }

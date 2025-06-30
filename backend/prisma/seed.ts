@@ -101,7 +101,7 @@ async function main() {
   });
 
   // Crear productos para los locatarios
-  const productosLocatario1 = await prisma.producto.createMany({
+  await prisma.producto.createMany({
     data: [
       {
         nombre: 'Memoria RAM 8 GB',
@@ -122,11 +122,6 @@ async function main() {
         stock: 25,
         locatarioId: locatario1.locatario?.id!,
       },
-    ],
-  });
-
-  const productosLocatario2 = await prisma.producto.createMany({
-    data: [
       {
         nombre: 'Manzanas',
         descripcion: 'Manzanas rojas del sur',
@@ -174,19 +169,19 @@ async function main() {
   await prisma.carritoItem.createMany({
     data: [
       {
-        compradorId: comprador2.id,
-        productoId: productos[1].id, // Teclado mecanico
+        compradorId: comprador2.comprador?.id!,
+        productoId: productos[1].id,
         cantidad: 1,
       },
       {
-        compradorId: comprador2.id,
-        productoId: productos[5].id, // Tomates
+        compradorId: comprador2.comprador?.id!,
+        productoId: productos[5].id,
         cantidad: 10,
       },
     ],
   });
 
-  // crear pedidos (igual que antes)
+  // crear pedidos (sin metodoEntrega)
   const pedido1 = await prisma.pedido.create({
     data: {
       compradorId: comprador1.comprador?.id!,
@@ -195,7 +190,7 @@ async function main() {
       fechaPedido: new Date(Date.now() - 86400000 * 2), // 2 dias atras
       fechaEntrega: new Date(Date.now() - 86400000 * 1),  // 1 dia atras
       total: 40000,
-      notas: 'dejar en porteria'
+      notas: 'dejar en porteria',
     }
   });
 
@@ -209,6 +204,18 @@ async function main() {
       total: 23600,
     }
   });
+
+  // Si tu modelo de Valoracion no tiene tipoEntrega, no lo agregues aquí.
+  // Ejemplo de valoración (ajusta si tu modelo lo requiere)
+  // await prisma.valoracion.create({
+  //   data: {
+  //     compradorId: comprador1.comprador?.id!,
+  //     productoId: productos[0].id,
+  //     calificacion: 5,
+  //     comentario: "Excelente producto",
+  //     fecha: new Date(),
+  //   }
+  // });
 }
 
 main()

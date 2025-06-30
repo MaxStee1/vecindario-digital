@@ -21,9 +21,9 @@ export class CreatePedidoDto {
   @IsOptional()
   direccionEntrega?: string;
 
-  @IsEnum(MetodoEntrega)
+  /*@IsEnum(MetodoEntrega)
   metodoEntrega!: MetodoEntrega;
-
+*/
   @IsEnum(EstadoPedido)
   @IsOptional()
   estado?: EstadoPedido;
