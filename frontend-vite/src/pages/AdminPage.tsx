@@ -45,6 +45,7 @@ const AdminPage = () => {
         rol: ''
     });
     const [showUsers, setShowUsers] = useState(false);
+    const [topLocatariosProductos, setTopLocatariosProductos] = useState([]);
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
@@ -52,6 +53,7 @@ const AdminPage = () => {
             try {
                 const usuarioRes = await api.get('/admin/users');
                 const stateRes = await api.get('/admin/metrics');
+                const topLocatariosRes = await api.get('/admin/top-locatarios-productos');
                 setUsuarios(usuarioRes.data);
                 setEstadisticas({
                     totalUsuarios: stateRes.data.totalUsuarios,
@@ -63,6 +65,7 @@ const AdminPage = () => {
                     pedidosPorEstado: stateRes.data.pedidosPorEstado,
                     topProductos: stateRes.data.topProductos,
                 });
+                setTopLocatariosProductos(topLocatariosRes.data);
             } catch (error) {
                 console.error("Error al obtener datos", error);
                 alert("Hubo un problema al cargar los datos. Por favor, intenta nuevamente.");
@@ -245,7 +248,7 @@ const AdminPage = () => {
                 <Toast ref={toast} />
                 
                 {!showUsers ? (
-                    <MetricsSection estadisticas={estadisticas} />
+                    <MetricsSection estadisticas={estadisticas} topLocatariosProductos={topLocatariosProductos} />
                 ) : (
                     <UsersSection 
                         usuarios={usuarios} 

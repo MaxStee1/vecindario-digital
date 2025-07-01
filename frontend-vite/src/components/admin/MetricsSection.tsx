@@ -11,6 +11,11 @@ interface ProductoMasVendido {
     cantidadVendida: number;
 }
 
+interface LocatarioProductos {
+    nombre: string;
+    cantidadProductos: number;
+}
+
 interface MetricsProps {
     estadisticas: {
         totalUsuarios: number,
@@ -22,9 +27,11 @@ interface MetricsProps {
         pedidosPorEstado?: PedidoPorEstado[];
         topProductos?: ProductoMasVendido[];
     };
+    topLocatariosProductos?: LocatarioProductos[];
 }
 
-const MetricsSection: React.FC<MetricsProps> = ({ estadisticas }) => {
+const MetricsSection: React.FC<MetricsProps> = ({ estadisticas, topLocatariosProductos = [] }) => {
+    console.log("topLocatariosProductos", topLocatariosProductos);
     // Configuración del gráfico de dona para métricas principales
     const donutData = {
         labels: ['Locatarios', 'Compradores', 'Repartidores'],
@@ -100,6 +107,18 @@ const MetricsSection: React.FC<MetricsProps> = ({ estadisticas }) => {
         ]
     };
 
+    // Gráfico de productos por locatario (máximo 5)
+    const productosLocatarioData = {
+        labels: topLocatariosProductos.map(l => l.nombre),
+        datasets: [
+            {
+                label: 'Cantidad de Productos',
+                backgroundColor: '#42A5F5',
+                data: topLocatariosProductos.map(l => l.cantidadProductos)
+            }
+        ]
+    };
+
     // Tabla de productos más vendidos
     const topProductos = estadisticas.topProductos || [];
 
@@ -157,18 +176,35 @@ const MetricsSection: React.FC<MetricsProps> = ({ estadisticas }) => {
                 </div>
                 
                 <div style={{ 
-                    flex: 2, 
-                    minWidth: "400px",
+                    flex: 1, 
+                    minWidth: "500px",
                     backgroundColor: "#242424",
                     padding: "20px", 
                     borderRadius: "10px",
-                    boxShadow: "0 0px 8px rgb(0 0 0 / 40%)"
+                    boxShadow: "0 0px 8px rgb(0 0 0 / 40%)",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "350px"
                 }}>
-                    <h3 style={{ textAlign: "center" }}>Comparación de Métricas</h3>
-                    <Chart type="bar" data={barData} options={barOptions} style={{ width: '100%' }} />
-                    <p style={{ textAlign: "center", fontStyle: "italic", marginTop: "10px" }}>
-                        Nota: Las ventas están representadas en miles para mejor visualización
-                    </p>
+                    <h3 style={{ textAlign: "center" }}>Top 5 Locatarios con más Productos</h3>
+                    <div style={{ width: "100%", height: "250px" }}>
+                        <Chart
+                            type="bar"
+                            data={productosLocatarioData}
+                            options={{
+                                indexAxis: 'y',
+                                plugins: { legend: { display: false } },
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: { beginAtZero: true, title: { display: true, text: 'Cantidad de Productos' } },
+                                    y: { title: { display: true, text: 'Locatario' } }
+                                }
+                            }}
+                            style={{ width: '100%', height: '100%' }}
+                        />
+                    </div>
                 </div>
             </div>
 

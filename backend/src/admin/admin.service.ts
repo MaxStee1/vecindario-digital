@@ -194,4 +194,24 @@ export class AdminService {
         }
     }
 
+    async getTopLocatariosPorProductos(limit: number = 5) {
+        const productosPorLocatario = await this.prisma.producto.groupBy({
+            by: ['locatarioId'],
+            _count: { id: true },
+            orderBy: { _count: { id: 'desc' } },
+            take: limit,
+        });
+
+        const locatarioIds = productosPorLocatario.map(v => v.locatarioId);
+        const locatarios = await this.prisma.locatario.findMany({
+            where: { id: { in: locatarioIds } },
+            include: { usuario: true }
+        });
+
+        return productosPorLocatario.map(v => ({
+            nombre: locatarios.find(l => l.id === v.locatarioId)?.usuario?.nombre || 'Desconocido',
+            cantidadProductos: v._count.id
+        }));
+    }
+
 }
