@@ -38,6 +38,12 @@ export class AdminController {
     return this.adminService.getSalesMetrics();
   }
 
+  @Get('top-locatarios-productos')
+  @Roles('admin')
+  getTopLocatariosVentas() {
+      return this.adminService.getTopLocatariosPorProductos();
+  }
+
   // editar usuario
   @Put('users/edit/:id')
   @Roles('admin')

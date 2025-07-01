@@ -2,6 +2,10 @@
 
 Aplicación web desarrollada en **React** con **Vite** para la plataforma de comercio local.
 
+![Node.js version](https://img.shields.io/badge/node-%3E=18.0.0-green)
+![npm version](https://img.shields.io/badge/npm-%3E=9.0.0-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%3E=15.0-blue)
+
 ## Tecnologías
 
 - [React](https://react.dev/)
@@ -27,7 +31,7 @@ Aplicación web desarrollada en **React** con **Vite** para la plataforma de com
 
 ## Configuración
 
-- El frontend está configurado para consumir la API en `http://localhost:3001` (ver [src/services/api.ts](src/services/api.ts)).
+- El frontend está configurado para consumir la API en `http://localhost:3000` (ver [src/services/api.ts](src/services/api.ts)).
 - Las cookies de autenticación se envían automáticamente (`withCredentials: true`).
 
 ## Scripts
@@ -37,15 +41,20 @@ Aplicación web desarrollada en **React** con **Vite** para la plataforma de com
 - `npm run preview` - Previsualiza la build de producción
 - `npm run lint` - Linting del código
 
-## Estructura
+## Rutas principales
 
-- `src/pages/` - Vistas principales (Login, Registro, Home, Admin, Locatario, Comprador)
-- `src/components/` - Componentes reutilizables (LogoutButton, ProtectedRoute, etc.)
-- `src/services/api.ts` - Configuración de Axios para llamadas a la API
+- `/` — Página de inicio
+- `/login` — Inicio de sesión
+- `/registro` — Registro de usuario
 
+## Estructura de carpetas
+
+- `src/components` — Componentes reutilizables
+- `src/pages` — Vistas principales
+- `src/services` — Lógica de conexión con el backend
 ## Notas
 
-- El frontend requiere que el backend esté corriendo en `http://localhost:3001`.
+- El frontend requiere que el backend esté corriendo en `http://localhost:3000`.
 - El login y registro funcionan mediante cookies HTTP-only, no se almacena el token en localStorage.
 
 ---

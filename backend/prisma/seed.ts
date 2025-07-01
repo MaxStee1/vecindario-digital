@@ -6,33 +6,34 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Enviando datos a la DB...');
 
-  // crear usuarios base
+  // Password hash
   const password = await bcrypt.hash('password', 10);
 
-  await prisma.usuario.create({
+  // Crear usuarios base
+  const admin = await prisma.usuario.create({
     data: {
       nombre: 'Admin',
-      email: 'ad@admin.com',
+      email: 'admin@gmail.com',
       contrasenia: password,
       rol: 'admin',
       telefono: '+56912345678',
     },
   });
 
-  // Crear varios locatarios
+  // Locatarios
   const locatario1 = await prisma.usuario.create({
     data: {
-      nombre: 'Locatario1',
-      email: 'locatario@gmail.com',
+      nombre: 'Bruno Fernandez',
+      email: 'loc1@gmail.com',
       contrasenia: password,
       rol: 'locatario',
       telefono: '+56987654321',
-      direccion: 'Calle principal 1, Coquimbo',
+      direccion: 'Calle Principal 1, Coqumbo',
       locatario: {
         create: {
-          nombreTienda: 'Primer Almacen',
-          descripcion: 'productos de caracter tecnologico',
-          direccionTienda: 'calle Principal 1, Local 5',
+          nombreTienda: 'Almacen Future',
+          descripcion: 'Tecnología y accesorios',
+          direccionTienda: 'Calle Principal 1, Local 5',
           horarioApertura: '08:00',
           horarioCierre: '20:00',
           metodosEntrega: ['envio', 'retiro'],
@@ -44,16 +45,16 @@ async function main() {
 
   const locatario2 = await prisma.usuario.create({
     data: {
-      nombre: 'María González',
-      email: 'maria@gmail.com',
+      nombre: 'Roberto Carlos',
+      email: 'loc2@gmail.com',
       contrasenia: password,
       rol: 'locatario',
       telefono: '+56955555555',
-      direccion: 'Avenida Secundaria 456, Santiago',
+      direccion: 'Avenida Secundaria 456, Ciudad',
       locatario: {
         create: {
-          nombreTienda: 'Verdulería Fresca',
-          descripcion: 'Frutas y verduras frescas de la huerta',
+          nombreTienda: 'Verdulería Dia a Dia',
+          descripcion: 'Frutas y verduras frescas',
           direccionTienda: 'Avenida Secundaria 456, Local 2',
           horarioApertura: '07:30',
           horarioCierre: '19:30',
@@ -61,22 +62,57 @@ async function main() {
         },
       },
     },
-    include: { locatario: true },
+    include: { locatario: true }
   });
 
-  // crear compradores
+  // Proveedores
+  const proveedor1 = await prisma.proveedor.create({
+    data: {
+      nombre: 'TecnoFlies',
+      email: 'proveedor1@gmail.com',
+      locatarios: {
+        connect: [{ id: locatario1.locatario!.id }]
+      }
+    }
+  });
 
+  const proveedor2 = await prisma.proveedor.create({
+    data: {
+      nombre: 'VeggieLife',
+      email: 'proveedor2@gmail.com',
+      locatarios: {
+        connect: [{ id: locatario2.locatario!.id }]
+      }
+    }
+  });
+
+  // Categorías
+  const categoria1 = await prisma.categoria.create({
+    data: {
+      nombre: 'Tecnología',
+      locatarioId: locatario1.locatario!.id,
+    }
+  });
+
+  const categoria2 = await prisma.categoria.create({
+    data: {
+      nombre: 'Verduras',
+      locatarioId: locatario2.locatario!.id,
+    }
+  });
+
+  // Compradores
   const comprador1 = await prisma.usuario.create({
     data: {
-      nombre: 'Max',
-      email: 'max@gmail.com',
+      nombre: 'Fernando Perez',
+      email: 'comprador1@gmail.com',
       contrasenia: password,
       rol: 'comprador',
       telefono: '+56911111111',
-      direccion: 'calle residencial 786, numero 2',
+      direccion: 'Calle Residencial 786, N°2',
       comprador: {
         create: {
-          direccionEntrega: 'calle residencial 786, numero 2',
+          direccionEntrega: 'Calle Residencial 786, N°2',
         },
       },
     },
@@ -85,8 +121,8 @@ async function main() {
 
   const comprador2 = await prisma.usuario.create({
     data: {
-      nombre: 'Ana Martínez',
-      email: 'ana@cliente.com',
+      nombre: 'Alexis Torres',
+      email: 'comprador2@gmail.com',
       contrasenia: password,
       rol: 'comprador',
       telefono: '+56922222222',
@@ -100,115 +136,174 @@ async function main() {
     include: { comprador: true },
   });
 
-  // Crear productos para los locatarios
-  const productosLocatario1 = await prisma.producto.createMany({
-    data: [
-      {
-        nombre: 'Memoria RAM 8 GB',
-        descripcion: 'Memoria RAM 8GB 1rx8 3200MHz',
-        precio: 30000,
-        stock: 10,
-        locatarioId: locatario1.locatario?.id!,
-      },
-      {
-        nombre: 'Teclado mecanico',
-        precio: 45000,
-        stock: 10,
-        locatarioId: locatario1.locatario?.id!,
-      },
-      {
-        nombre: 'Cargador tipo C',
-        precio: 10000,
-        stock: 25,
-        locatarioId: locatario1.locatario?.id!,
-      },
-    ],
+  // Repartidor
+  const repartidor = await prisma.usuario.create({
+    data: {
+      nombre: 'Jordan Silva',
+      email: 'repartidor@gmail.com',
+      contrasenia: password,
+      rol: 'repartidor',
+      telefono: '+56933333333',
+      direccion: 'Calle Delivery 123',
+      repartidor: {
+        create: {
+          disponible: true,
+          ubicacionActual: 'Calle Delivery 123',
+        }
+      }
+    },
+    include: { repartidor: true }
   });
 
-  const productosLocatario2 = await prisma.producto.createMany({
-    data: [
-      {
-        nombre: 'Manzanas',
-        descripcion: 'Manzanas rojas del sur',
-        precio: 990,
-        stock: 40,
-        locatarioId: locatario2.locatario?.id!,
-      },
-      {
-        nombre: 'Lechuga',
-        descripcion: 'Lechuga fresca',
-        precio: 590,
-        stock: 25,
-        locatarioId: locatario2.locatario?.id!,
-      },
-      {
-        nombre: 'Tomates',
-        descripcion: 'Tomates perita',
-        precio: 790,
-        stock: 35,
-        locatarioId: locatario2.locatario?.id!,
-      },
-    ],
+  // Productos
+  const producto1 = await prisma.producto.create({
+    data: {
+      nombre: 'Memoria RAM 8GB',
+      descripcion: 'Memoria RAM DDR4 3200MHz',
+      precio: 30000,
+      stock: 10,
+      locatarioId: locatario1.locatario!.id,
+      categorias: { connect: [{ id: categoria1.id }] }
+    }
   });
 
-  // Obtener productos para el carrito (usando findMany para obtener los IDs)
-  const productos = await prisma.producto.findMany();
-
-  // Agregar productos al carrito de comprador1
-  await prisma.carritoItem.createMany({
-    data: [
-      {
-        compradorId: comprador1.comprador?.id!,
-        productoId: productos[0].id, // Memoria RAM 8 GB
-        cantidad: 2,
-      },
-      {
-        compradorId: comprador1.comprador?.id!,
-        productoId: productos[3].id, // Manzanas
-        cantidad: 5,
-      },
-    ],
+  const producto2 = await prisma.producto.create({
+    data: {
+      nombre: 'Teclado Mecánico',
+      descripcion: 'Teclado RGB',
+      precio: 45000,
+      stock: 5,
+      locatarioId: locatario1.locatario!.id,
+      categorias: { connect: [{ id: categoria1.id }] }
+    }
   });
 
-  // Agregar productos al carrito de comprador2
-  await prisma.carritoItem.createMany({
-    data: [
-      {
-        compradorId: comprador2.id,
-        productoId: productos[1].id, // Teclado mecanico
-        cantidad: 1,
-      },
-      {
-        compradorId: comprador2.id,
-        productoId: productos[5].id, // Tomates
-        cantidad: 10,
-      },
-    ],
+  const producto3 = await prisma.producto.create({
+    data: {
+      nombre: 'Lechuga',
+      descripcion: 'Lechuga fresca',
+      precio: 800,
+      stock: 30,
+      locatarioId: locatario2.locatario!.id,
+      categorias: { connect: [{ id: categoria2.id }] }
+    }
   });
 
-  // crear pedidos (igual que antes)
+  const producto4 = await prisma.producto.create({
+    data: {
+      nombre: 'Tomate',
+      descripcion: 'Tomate perita',
+      precio: 900,
+      stock: 25,
+      locatarioId: locatario2.locatario!.id,
+      categorias: { connect: [{ id: categoria2.id }] }
+    }
+  });
+
+  // Pedido 1 (entregado)
   const pedido1 = await prisma.pedido.create({
     data: {
-      compradorId: comprador1.comprador?.id!,
+      compradorId: comprador1.comprador!.id,
+      repartidorId: repartidor.repartidor!.id,
       estado: 'entregado',
-      direccionEntrega: comprador1.comprador?.direccionEntrega,
-      fechaPedido: new Date(Date.now() - 86400000 * 2), // 2 dias atras
-      fechaEntrega: new Date(Date.now() - 86400000 * 1),  // 1 dia atras
-      total: 40000,
-      notas: 'dejar en porteria'
+      direccionEntrega: comprador1.comprador!.direccionEntrega,
+      fechaPedido: new Date(Date.now() - 86400000 * 2),
+      fechaEntrega: new Date(Date.now() - 86400000 * 1),
+      total: 70000,
+      notas: 'Dejar en portería',
+      productos: {
+        create: [
+          {
+            productoId: producto1.id,
+            cantidad: 2,
+            precio: 60000,
+          },
+          {
+            productoId: producto3.id,
+            cantidad: 5,
+            precio: 4000,
+          },
+        ]
+      },
+      ventasLocatario: {
+        create: [
+          {
+            locatarioId: locatario1.locatario!.id,
+            total: 60000,
+            estado: 'entregado'
+          },
+          {
+            locatarioId: locatario2.locatario!.id,
+            total: 4000,
+            estado: 'entregado'
+          }
+        ]
+      }
     }
   });
 
+  // Pedido 2 (pendiente)
   const pedido2 = await prisma.pedido.create({
     data: {
-      compradorId: comprador2.comprador?.id!,
-      estado: 'pendiente',
-      direccionEntrega: comprador2.comprador?.direccionEntrega,
+      compradorId: comprador2.comprador!.id,
+      repartidorId: repartidor.repartidor!.id,
+      estado: 'enReparto',
+      direccionEntrega: comprador2.comprador!.direccionEntrega,
       fechaPedido: new Date(),
-      fechaEntrega: new Date(Date.now()),
-      total: 23600,
+      total: 45900,
+      notas: 'Llamar antes de llegar',
+      productos: {
+        create: [
+          {
+            productoId: producto2.id,
+            cantidad: 1,
+            precio: 45000,
+          },
+          {
+            productoId: producto4.id,
+            cantidad: 1,
+            precio: 900,
+          },
+        ]
+      },
+      ventasLocatario: {
+        create: [
+          {
+            locatarioId: locatario1.locatario!.id,
+            total: 45000,
+            estado: 'pendiente'
+          },
+          {
+            locatarioId: locatario2.locatario!.id,
+            total: 900,
+            estado: 'pendiente'
+          }
+        ]
+      }
     }
   });
+
+  // Valoraciones
+  await prisma.valoracion.createMany({
+    data: [
+      {
+        compradorId: comprador1.comprador!.id,
+        productoId: producto1.id,
+        calificacion: 5,
+        comentario: 'Excelente producto',
+        fecha: new Date(),
+      },
+      {
+        compradorId: comprador2.comprador!.id,
+        productoId: producto4.id,
+        calificacion: 4,
+        comentario: 'Muy buenos tomates',
+        fecha: new Date(),
+      }
+    ]
+  });
+
+  console.log('Seed completo!');
 }
 
 main()

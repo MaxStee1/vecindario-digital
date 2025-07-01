@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Toast } from "primereact/toast";
-import axios from "axios";
+import api from "../services/api";
 import "../styles/forms.css"
 
 //pagina de registro
@@ -35,7 +35,7 @@ function Register() {
         }
 
         try {
-            await axios.post("http://localhost:3001/auth/register", {
+            await api.post("/auth/register", {
                 nombre: name,
                 email,
                 password,
