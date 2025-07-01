@@ -26,7 +26,7 @@ Proyecto de comercio digital y local para comunidades, desarrollado con **NestJS
 
 2. Ejecuta el script de instalación:
    ```sh
-   npm run setup
+   ./setup.sh
    ```
 
    > El script instalará dependencias, pedirá que configures el archivo `backend/.env`, aplicará migraciones y cargará datos de prueba.
@@ -48,11 +48,47 @@ Proyecto de comercio digital y local para comunidades, desarrollado con **NestJS
 
 ---
 
-## Requisitos
+## Instalación Manual (alternativa)
 
-- Node.js >= 18
-- npm >= 9
-- Docker (opcional, para base de datos)
+Si tienes problemas con el script `./setup.sh`, puedes realizar la configuración manualmente siguiendo estos pasos:
+
+1. **Instala las dependencias de backend y frontend:**
+   ```bash
+   cd backend
+   npm install
+   cd ../frontend-vite
+   npm install
+   ```
+
+2. **Configura la base de datos y variables de entorno:**
+   - Copia el archivo `.env.example` a `.env` en la carpeta `backend/` y edítalo con tus datos de conexión.
+
+3. **Aplica las migraciones y genera el cliente Prisma:**
+   ```bash
+   cd backend
+   npx prisma migrate dev --name init
+   npx prisma generate
+   ```
+
+4. **Carga los datos de prueba (opcional):**
+   ```bash
+   npm run seed
+   ```
+
+5. **Inicia ambos servidores en terminales separadas:**
+   - Backend:
+     ```bash
+     cd backend
+     npm run start:dev
+     ```
+   - Frontend:
+     ```bash
+     cd frontend-vite
+     npm run dev
+     ```
+
+6. **Accede a la aplicación:**  
+   Abre [http://localhost:5173](http://localhost:5173) en tu navegador.
 
 ---
 
