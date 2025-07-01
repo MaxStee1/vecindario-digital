@@ -247,7 +247,7 @@ async function main() {
     data: {
       compradorId: comprador2.comprador!.id,
       repartidorId: repartidor.repartidor!.id,
-      estado: 'pendiente',
+      estado: 'enReparto',
       direccionEntrega: comprador2.comprador!.direccionEntrega,
       fechaPedido: new Date(),
       total: 45900,

@@ -11,6 +11,7 @@ cd ../frontend-vite
 npm install
 
 echo "== Recuerda configurar backend/.env antes de continuar =="
+echo "En /backend/.env.example encontrarás un ejemplo de configuración."
 read -p "¿Ya configuraste backend/.env? (y/n): " ENV_READY
 if [[ "$ENV_READY" != "y" ]]; then
   echo "Por favor, configura backend/.env y vuelve a ejecutar este script."
