@@ -13,7 +13,7 @@ async function main() {
   const admin = await prisma.usuario.create({
     data: {
       nombre: 'Admin',
-      email: 'admin@admin.com',
+      email: 'admin@gmail.com',
       contrasenia: password,
       rol: 'admin',
       telefono: '+56912345678',
@@ -23,15 +23,15 @@ async function main() {
   // Locatarios
   const locatario1 = await prisma.usuario.create({
     data: {
-      nombre: 'Locatario Uno',
-      email: 'loca1@tienda.com',
+      nombre: 'Bruno Fernandez',
+      email: 'loc1@gmail.com',
       contrasenia: password,
       rol: 'locatario',
       telefono: '+56987654321',
-      direccion: 'Calle Principal 1, Ciudad',
+      direccion: 'Calle Principal 1, Coqumbo',
       locatario: {
         create: {
-          nombreTienda: 'Almacen Uno',
+          nombreTienda: 'Almacen Future',
           descripcion: 'Tecnología y accesorios',
           direccionTienda: 'Calle Principal 1, Local 5',
           horarioApertura: '08:00',
@@ -45,15 +45,15 @@ async function main() {
 
   const locatario2 = await prisma.usuario.create({
     data: {
-      nombre: 'Locatario Dos',
-      email: 'loca2@tienda.com',
+      nombre: 'Roberto Carlos',
+      email: 'loc2@gmail.com',
       contrasenia: password,
       rol: 'locatario',
       telefono: '+56955555555',
       direccion: 'Avenida Secundaria 456, Ciudad',
       locatario: {
         create: {
-          nombreTienda: 'Verdulería Dos',
+          nombreTienda: 'Verdulería Dia a Dia',
           descripcion: 'Frutas y verduras frescas',
           direccionTienda: 'Avenida Secundaria 456, Local 2',
           horarioApertura: '07:30',
@@ -68,8 +68,8 @@ async function main() {
   // Proveedores
   const proveedor1 = await prisma.proveedor.create({
     data: {
-      nombre: 'Proveedor Uno',
-      email: 'proveedor1@proveedor.com',
+      nombre: 'TecnoFlies',
+      email: 'proveedor1@gmail.com',
       locatarios: {
         connect: [{ id: locatario1.locatario!.id }]
       }
@@ -78,8 +78,8 @@ async function main() {
 
   const proveedor2 = await prisma.proveedor.create({
     data: {
-      nombre: 'Proveedor Dos',
-      email: 'proveedor2@proveedor.com',
+      nombre: 'VeggieLife',
+      email: 'proveedor2@gmail.com',
       locatarios: {
         connect: [{ id: locatario2.locatario!.id }]
       }
@@ -104,8 +104,8 @@ async function main() {
   // Compradores
   const comprador1 = await prisma.usuario.create({
     data: {
-      nombre: 'Comprador Uno',
-      email: 'comprador1@cliente.com',
+      nombre: 'Fernando Perez',
+      email: 'comprador1@gmail.com',
       contrasenia: password,
       rol: 'comprador',
       telefono: '+56911111111',
@@ -121,8 +121,8 @@ async function main() {
 
   const comprador2 = await prisma.usuario.create({
     data: {
-      nombre: 'Comprador Dos',
-      email: 'comprador2@cliente.com',
+      nombre: 'Alexis Torres',
+      email: 'comprador2@gmail.com',
       contrasenia: password,
       rol: 'comprador',
       telefono: '+56922222222',
@@ -139,8 +139,8 @@ async function main() {
   // Repartidor
   const repartidor = await prisma.usuario.create({
     data: {
-      nombre: 'Repartidor Uno',
-      email: 'repartidor@delivery.com',
+      nombre: 'Jordan Silva',
+      email: 'repartidor@gmail.com',
       contrasenia: password,
       rol: 'repartidor',
       telefono: '+56933333333',
@@ -198,38 +198,6 @@ async function main() {
       locatarioId: locatario2.locatario!.id,
       categorias: { connect: [{ id: categoria2.id }] }
     }
-  });
-
-  // Carrito de comprador1
-  await prisma.carritoItem.createMany({
-    data: [
-      {
-        compradorId: comprador1.comprador!.id,
-        productoId: producto1.id,
-        cantidad: 2,
-      },
-      {
-        compradorId: comprador1.comprador!.id,
-        productoId: producto3.id,
-        cantidad: 5,
-      },
-    ],
-  });
-
-  // Carrito de comprador2
-  await prisma.carritoItem.createMany({
-    data: [
-      {
-        compradorId: comprador2.comprador!.id,
-        productoId: producto2.id,
-        cantidad: 1,
-      },
-      {
-        compradorId: comprador2.comprador!.id,
-        productoId: producto4.id,
-        cantidad: 10,
-      },
-    ],
   });
 
   // Pedido 1 (entregado)

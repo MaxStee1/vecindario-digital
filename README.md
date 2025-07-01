@@ -92,6 +92,22 @@ Si tienes problemas con el script `./setup.sh`, puedes realizar la configuració
 
 ---
 
+## Datos de prueba (usuarios para login)
+Al ejecutar el script de seed, se crean los siguientes usuarios:
+
+
+| Rol        | Nombre            | Email                | Contraseña | Notas                              |
+|------------|-------------------|----------------------|------------|------------------------------------|
+| Admin      | Admin             | admin@gmail.com      | password   |                                    |
+| Locatario  | Bruno Fernandez   | loc1@gmail.com       | password   | Tienda: Almacen Future             |
+| Locatario  | Roberto Carlos    | loc2@gmail.com       | password   | Tienda: Verdulería Dia a Dia       |
+| Comprador  | Fernando Perez    | comprador1@gmail.com | password   |                                    |
+| Comprador  | Alexis Torres     | comprador2@gmail.com | password   |                                    |
+| Repartidor | Jordan Silva      | repartidor@gmail.com | password   |                                    |
+
+Puedes usar estos usuarios para probar el login y las funcionalidades de la aplicación.
+
+
 ## Scripts útiles
 
 - `./setup.sh` : Automatiza la instalación y preparación inicial.

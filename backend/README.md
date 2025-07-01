@@ -69,8 +69,8 @@ Consulta [prisma/schema.prisma](prisma/schema.prisma) para ver el modelo de dato
 
 ## Notas
 
-- El backend corre por defecto en el puerto **3001**.
-- El frontend debe apuntar a `http://localhost:3001` para las peticiones API.
+- El backend corre por defecto en el puerto **3000**.
+- El frontend debe apuntar a `http://localhost:3000` para las peticiones API.
 - El token JWT se almacena en una cookie HTTP-only para mayor seguridad.
 
 ---

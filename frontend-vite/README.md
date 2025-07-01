@@ -46,7 +46,6 @@ Aplicación web desarrollada en **React** con **Vite** para la plataforma de com
 - `/` — Página de inicio
 - `/login` — Inicio de sesión
 - `/registro` — Registro de usuario
-- `/perfil` — Perfil del usuario
 
 ## Estructura de carpetas
 
