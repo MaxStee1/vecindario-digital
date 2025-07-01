@@ -7,7 +7,6 @@ import ProductosPage from "./locatario/ProductosPage";
 import ProveedoresPage from "./locatario/ProveedoresPage";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
-import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 
@@ -106,138 +105,195 @@ const LocatarioPage = () => {
         }
     };
 
+    // --- ESTILOS ---
+    const cardStyle: React.CSSProperties = {
+        background: "#fff",
+        borderRadius: "18px",
+        boxShadow: "0 2px 12px rgba(25,118,210,0.08)",
+        padding: "36px 32px",
+        margin: "0 auto",
+        marginTop: "24px",
+        maxWidth: 900,
+        width: "100%"
+    };
+
+    const inputStyle: React.CSSProperties = {
+        padding: "10px",
+        borderRadius: 8,
+        border: "1.5px solid #E3E7ED",
+        fontSize: 16,
+        marginBottom: 8,
+        background: "#fff",
+        color: "#222",
+        outline: "none",
+        transition: "border-color 0.2s"
+    };
+
+    const labelStyle: React.CSSProperties = {
+        fontWeight: 600,
+        color: "#1976D2",
+        marginBottom: 4
+    };
+
+    // --- FIN ESTILOS ---
+
     return (
-        <div>
+        <div style={{ minHeight: "100vh", background: "linear-gradient(120deg, #F8FAFC 60%, #E3F2FD 100%)" }}>
             <Toast ref={toast} />
-            <header>
-                <h2 style={{padding:"1rem", textAlign:"center", marginBottom:"0"}}>Administración de <strong>{nombreTienda}</strong></h2>
-                <p style={{padding:"1rem", textAlign:"center", marginTop:"0"}}>Bienvenido, <strong>{locatarioNombre}</strong></p>
+            <header style={{
+                marginBottom: "32px",
+                width: "100%",
+                background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+                borderBottomLeftRadius: 32,
+                borderBottomRightRadius: 32,
+                boxShadow: "0 4px 24px rgba(25, 118, 210, 0.08)",
+                padding: "2.5rem 0 1.5rem 0"
+            }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <h2 style={{
+                        color: "#fff",
+                        fontWeight: 800,
+                        fontSize: "2.2rem",
+                        margin: 0,
+                        letterSpacing: "1px"
+                    }}>
+                        Administración de <span style={{ color: "#FFD600" }}>{nombreTienda}</span>
+                    </h2>
+                    <p style={{
+                        color: "#fff",
+                        fontSize: "1.15rem",
+                        marginTop: 18,
+                        marginBottom: 0,
+                        fontWeight: 500
+                    }}>
+                        Bienvenido, <strong>{locatarioNombre}</strong>
+                    </p>
+                </div>
             </header>
-            
-            <main className="locatarioMain" style={{ 
-                display: "flex", 
-                flexDirection: "column", 
+            <main className="locatarioMain" style={{
+                display: "flex",
+                flexDirection: "column",
                 alignItems: "center",
                 width: "100%",
                 padding: "0 2rem"
             }}>
-                <div style={{ width: "100%", maxWidth: "1200px"}}>
+                <div style={{ width: "100%", maxWidth: "1200px" }}>
                     <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}
-                        style={{borderRadius:"10px", margin:"1rem", placeItems:"center"}} 
+                        style={{ borderRadius: "14px", margin: "1rem", placeItems: "center", background: "transparent" }}
                     >
-                        <TabPanel header="Mis Productos" leftIcon="pi pi-shopping-bag mr-2">
+                        <TabPanel header="Mis Productos" leftIcon={<span className="pi pi-shopping-bag" style={{ color: "#1976D2", fontSize: 20, marginRight: 8 }}></span>}>
                             <ProductosPage nombreTienda={nombreTienda} toastRef={toast} />
                         </TabPanel>
-                        <TabPanel header="Mis Proveedores" leftIcon="pi pi-users mr-2">
+                        <TabPanel header="Mis Proveedores" leftIcon={<span className="pi pi-users" style={{ color: "#43A047", fontSize: 20, marginRight: 8 }}></span>}>
                             <ProveedoresPage toastRef={toast} />
                         </TabPanel>
-                        <TabPanel header="Mi tienda" leftIcon="pi pi-store mr-2">
-                            <Card style={{ }}>
+                        <TabPanel header="Mi tienda" leftIcon={<span className="pi pi-store" style={{ color: "#FFA726", fontSize: 20, marginRight: 8 }}></span>}>
+                            <div style={cardStyle}>
                                 <div className="p-fluid" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                                    <div className="p-field" style={{ 
+                                    <div className="p-field" style={{
                                         marginBottom: '1.5rem',
                                         padding: '1rem',
-                                        backgroundColor: 'var(--surface-ground)',
-                                        borderRadius: '6px'
+                                        backgroundColor: '#F5F7FA',
+                                        borderRadius: '8px'
                                     }}>
-                                        <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+                                        <label style={{ ...labelStyle, color: "#43A047" }}>
                                             Puntaje de Visibilidad de la Tienda
                                         </label>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                            <div style={{ 
+                                            <div style={{
                                                 width: '100%',
                                                 height: '1.5rem',
-                                                backgroundColor: 'var(--surface-border)',
+                                                backgroundColor: '#E3E7ED',
                                                 borderRadius: '6px',
                                                 overflow: 'hidden'
                                             }}>
-                                                <div 
-                                                    style={{ 
+                                                <div
+                                                    style={{
                                                         width: `${tiendaInfo.puntajeVisibilidad}%`,
                                                         height: '100%',
-                                                        backgroundColor: tiendaInfo.puntajeVisibilidad > 70 
-                                                            ? 'var(--green-500)' 
-                                                            : tiendaInfo.puntajeVisibilidad > 40 
-                                                                ? 'var(--orange-500)' 
-                                                                : 'var(--red-500)',
+                                                        background: tiendaInfo.puntajeVisibilidad > 70
+                                                            ? 'linear-gradient(90deg, #43A047 60%, #1976D2 100%)'
+                                                            : tiendaInfo.puntajeVisibilidad > 40
+                                                                ? '#FFA726'
+                                                                : '#E53935',
                                                         transition: 'width 0.3s ease'
                                                     }}
                                                 />
                                             </div>
-                                            <span style={{ fontWeight: 'bold', minWidth: '3rem' }}>
+                                            <span style={{ fontWeight: 'bold', minWidth: '3rem', color: "#1976D2" }}>
                                                 {tiendaInfo.puntajeVisibilidad}%
                                             </span>
                                         </div>
-                                        <small className="p-d-block" style={{ marginTop: '0.5rem', color: 'var(--text-color-secondary)' }}>
+                                        <small className="p-d-block" style={{ marginTop: '0.5rem', color: '#888' }}>
                                             Este puntaje afecta la visibilidad de tu tienda en la plataforma
                                         </small>
                                     </div>
-                                    
+
                                     <div className="p-field" style={{ marginBottom: '1.5rem' }}>
-                                        <label htmlFor="nombreTienda">Nombre de la tienda</label>
-                                        <InputText 
-                                            id="nombreTienda" 
-                                            value={nombreTienda} 
-                                            onChange={(e) => setNombreTienda(e.target.value)} 
+                                        <label htmlFor="nombreTienda" style={labelStyle}>Nombre de la tienda</label>
+                                        <InputText
+                                            id="nombreTienda"
+                                            value={nombreTienda}
+                                            onChange={(e) => setNombreTienda(e.target.value)}
                                             disabled={!editMode}
-                                            style={{ width: '100%' }}
+                                            style={inputStyle}
                                         />
                                     </div>
-                                    
+
                                     <div className="p-field" style={{ marginBottom: '1.5rem' }}>
-                                        <label htmlFor="descripcion">Descripción</label>
-                                        <InputTextarea 
-                                            id="descripcion" 
-                                            name="descripcion" 
-                                            value={tiendaInfo.descripcion} 
-                                            onChange={handleInputChange} 
-                                            rows={3} 
+                                        <label htmlFor="descripcion" style={labelStyle}>Descripción</label>
+                                        <InputTextarea
+                                            id="descripcion"
+                                            name="descripcion"
+                                            value={tiendaInfo.descripcion}
+                                            onChange={handleInputChange}
+                                            rows={3}
                                             disabled={!editMode}
-                                            style={{ width: '100%' }}
+                                            style={inputStyle}
                                         />
                                     </div>
-                                    
+
                                     <div className="p-field" style={{ marginBottom: '1.5rem' }}>
-                                        <label htmlFor="direccionTienda">Dirección</label>
-                                        <InputText 
-                                            id="direccionTienda" 
-                                            name="direccionTienda" 
-                                            value={tiendaInfo.direccionTienda} 
-                                            onChange={handleInputChange} 
+                                        <label htmlFor="direccionTienda" style={labelStyle}>Dirección</label>
+                                        <InputText
+                                            id="direccionTienda"
+                                            name="direccionTienda"
+                                            value={tiendaInfo.direccionTienda}
+                                            onChange={handleInputChange}
                                             disabled={!editMode}
-                                            style={{ width: '100%' }}
+                                            style={inputStyle}
                                         />
                                     </div>
-                                    
+
                                     <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
                                         <div className="p-field" style={{ flex: 1 }}>
-                                            <label htmlFor="horarioApertura">Horario de apertura</label>
-                                            <InputText 
-                                                id="horarioApertura" 
-                                                name="horarioApertura" 
-                                                value={tiendaInfo.horarioApertura} 
-                                                onChange={handleInputChange} 
+                                            <label htmlFor="horarioApertura" style={labelStyle}>Horario de apertura</label>
+                                            <InputText
+                                                id="horarioApertura"
+                                                name="horarioApertura"
+                                                value={tiendaInfo.horarioApertura}
+                                                onChange={handleInputChange}
                                                 disabled={!editMode}
                                                 placeholder="Ej: 08:00"
-                                                style={{ width: '100%' }}
+                                                style={inputStyle}
                                             />
                                         </div>
                                         <div className="p-field" style={{ flex: 1 }}>
-                                            <label htmlFor="horarioCierre">Horario de cierre</label>
-                                            <InputText 
-                                                id="horarioCierre" 
-                                                name="horarioCierre" 
-                                                value={tiendaInfo.horarioCierre} 
-                                                onChange={handleInputChange} 
+                                            <label htmlFor="horarioCierre" style={labelStyle}>Horario de cierre</label>
+                                            <InputText
+                                                id="horarioCierre"
+                                                name="horarioCierre"
+                                                value={tiendaInfo.horarioCierre}
+                                                onChange={handleInputChange}
                                                 disabled={!editMode}
                                                 placeholder="Ej: 18:00"
-                                                style={{ width: '100%' }}
+                                                style={inputStyle}
                                             />
                                         </div>
                                     </div>
-                                    
+
                                     <div className="p-field">
-                                        <label>Métodos de entrega</label>
+                                        <label style={labelStyle}>Métodos de entrega</label>
                                         <div style={{ marginTop: '0.5rem' }}>
                                             {editMode ? (
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -260,20 +316,22 @@ const LocatarioPage = () => {
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                                                     {tiendaInfo.metodosEntrega.length > 0 ? (
                                                         tiendaInfo.metodosEntrega.map((metodo, index) => (
-                                                            <span 
-                                                                key={index} 
+                                                            <span
+                                                                key={index}
                                                                 className="p-tag"
-                                                                style={{ 
-                                                                    backgroundColor: 'var(--surface-b)', 
+                                                                style={{
+                                                                    backgroundColor: '#E3F2FD',
+                                                                    color: '#1976D2',
                                                                     padding: '0.5rem 1rem',
-                                                                    borderRadius: '6px'
+                                                                    borderRadius: '6px',
+                                                                    fontWeight: 600
                                                                 }}
                                                             >
                                                                 {getMetodoEntregaLabel(metodo as MetodoEntrega)}
                                                             </span>
                                                         ))
                                                     ) : (
-                                                        <span style={{ color:'red'}}>
+                                                        <span style={{ color: 'red' }}>
                                                             No se han seleccionado métodos de entrega
                                                         </span>
                                                     )}
@@ -285,37 +343,63 @@ const LocatarioPage = () => {
                                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
                                     {editMode ? (
                                         <>
-                                            <Button 
-                                                label="Cancelar" 
-                                                icon="pi pi-times" 
-                                                className="p-button-text" 
-                                                onClick={() => setEditMode(false)} 
+                                            <Button
+                                                label="Cancelar"
+                                                icon="pi pi-times"
+                                                className="p-button-text"
+                                                onClick={() => setEditMode(false)}
+                                                style={{ color: "#1976D2" }}
                                             />
-                                            <Button 
-                                                label="Guardar" 
-                                                icon="pi pi-check" 
-                                                onClick={guardarCambios} 
-                                                style={{ marginLeft: '0.5rem' }}
+                                            <Button
+                                                label="Guardar"
+                                                icon="pi pi-check"
+                                                onClick={guardarCambios}
+                                                style={{
+                                                    marginLeft: '0.5rem',
+                                                    background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+                                                    border: "none",
+                                                    borderRadius: 8,
+                                                    fontWeight: 600,
+                                                    fontSize: 16,
+                                                    color: "#fff"
+                                                }}
                                             />
                                         </>
                                     ) : (
-                                        <Button 
-                                            label="Editar" 
-                                            icon="pi pi-pencil" 
-                                            onClick={() => setEditMode(true)} 
+                                        <Button
+                                            label="Editar"
+                                            icon="pi pi-pencil"
+                                            onClick={() => setEditMode(true)}
+                                            style={{
+                                                background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+                                                border: "none",
+                                                borderRadius: 8,
+                                                fontWeight: 600,
+                                                fontSize: 16,
+                                                color: "#fff"
+                                            }}
                                         />
                                     )}
                                 </div>
-                            </Card>
+                            </div>
                         </TabPanel>
                     </TabView>
                 </div>
             </main>
-
-            <footer style={{ placeItems:'center', padding:"1rem", textAlign: "center" }}>
+            <footer style={{
+                marginTop: "auto",
+                fontSize: "15px",
+                color: "#666",
+                background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+                colorScheme: "light",
+                borderTopLeftRadius: 32,
+                borderTopRightRadius: 32,
+                width: "100%",
+                padding: "1.2rem 0 0.5rem 0",
+                textAlign: "center"
+            }}>
                 <LogoutButton />
-                <p>&copy; 2023 Comercio Digital y Local</p>
-                <p>Todos los derechos reservados</p>
+                <p style={{ color: "#fff", margin: 0 }}>&copy; {new Date().getFullYear()} Comercio Digital y Local. Todos los derechos reservados.</p>
             </footer>
         </div>
     );

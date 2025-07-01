@@ -1,5 +1,6 @@
 import React from "react";
 import { Chart } from 'primereact/chart';
+import { FaUsers, FaStore, FaShoppingCart, FaMoneyBillWave } from "react-icons/fa";
 
 interface PedidoPorEstado {
     estado: string;
@@ -9,11 +10,6 @@ interface PedidoPorEstado {
 interface ProductoMasVendido {
     nombre: string;
     cantidadVendida: number;
-}
-
-interface LocatarioProductos {
-    nombre: string;
-    cantidadProductos: number;
 }
 
 interface MetricsProps {
@@ -27,25 +23,30 @@ interface MetricsProps {
         pedidosPorEstado?: PedidoPorEstado[];
         topProductos?: ProductoMasVendido[];
     };
-    topLocatariosProductos?: LocatarioProductos[];
 }
 
-const MetricsSection: React.FC<MetricsProps> = ({ estadisticas, topLocatariosProductos = [] }) => {
-    console.log("topLocatariosProductos", topLocatariosProductos);
-    // Configuración del gráfico de dona para métricas principales
+const cardColors = [
+    { bg: "#F5F7FA", color: "#1976D2" },
+    { bg: "#FFF3E0", color: "#FFA726" },
+    { bg: "#E8F5E9", color: "#43A047" },
+    { bg: "#FFFDE7", color: "#FFD600" }
+];
+
+const MetricsSection: React.FC<MetricsProps> = ({ estadisticas }) => {
+    // Gráficos
     const donutData = {
         labels: ['Locatarios', 'Compradores', 'Repartidores'],
         datasets: [
             {
                 data: [estadisticas.totalLocatarios, estadisticas.totalCompradores, estadisticas.totalRepartidores],
                 backgroundColor: [
-                    '#42A5F5',
-                    '#66BB6A',
+                    '#1976D2',
+                    '#43A047',
                     '#FFA726'
                 ],
                 hoverBackgroundColor: [
-                    '#64B5F6',
-                    '#81C784',
+                    '#2196F3',
+                    '#66BB6A',
                     '#FFB74D'
                 ]
             }
@@ -53,7 +54,7 @@ const MetricsSection: React.FC<MetricsProps> = ({ estadisticas, topLocatariosPro
     };
 
     const donutOptions = {
-        cutout: '60%',
+        cutout: '65%',
         plugins: {
             legend: {
                 position: 'bottom'
@@ -61,190 +62,198 @@ const MetricsSection: React.FC<MetricsProps> = ({ estadisticas, topLocatariosPro
         }
     };
 
-    // Configuración del gráfico de barras para comparación
     const barData = {
-        labels: ['Métricas'],
+        labels: ['Usuarios', 'Ventas (K)', 'Locales Activos'],
         datasets: [
             {
-                label: 'Usuarios',
-                backgroundColor: '#42A5F5',
-                data: [estadisticas.totalUsuarios]
-            },
-            {
-                label: 'Ventas',
-                backgroundColor: '#66BB6A',
-                data: [estadisticas.totalVentas / 1000] // Escalado para mejor visualización
-            },
-            {
-                label: 'Locales Activos',
-                backgroundColor: '#FFA726',
-                data: [estadisticas.localesActivos]
+                label: 'Métricas',
+                backgroundColor: ['#1976D2', '#43A047', '#FFA726'],
+                data: [
+                    estadisticas.totalUsuarios,
+                    estadisticas.totalVentas / 1000,
+                    estadisticas.localesActivos
+                ]
             }
         ]
     };
 
     const barOptions = {
+        plugins: {
+            legend: { display: false }
+        },
         scales: {
-            x: {
-                stacked: false
-            },
-            y: {
-                beginAtZero: true
-            }
+            x: { grid: { display: false } },
+            y: { beginAtZero: true }
         }
     };
 
-    // Gráfico de pedidos por estado
+    // Pedidos por estado
     const pedidosPorEstado = estadisticas.pedidosPorEstado || [];
     const pedidosEstadoData = {
         labels: pedidosPorEstado.map(e => e.estado),
         datasets: [
             {
                 label: 'Cantidad de Pedidos',
-                backgroundColor: '#42A5F5',
+                backgroundColor: '#1976D2',
                 data: pedidosPorEstado.map(e => e._count._all)
             }
         ]
     };
 
-    // Gráfico de productos por locatario (máximo 5)
-    const productosLocatarioData = {
-        labels: topLocatariosProductos.map(l => l.nombre),
-        datasets: [
-            {
-                label: 'Cantidad de Productos',
-                backgroundColor: '#42A5F5',
-                data: topLocatariosProductos.map(l => l.cantidadProductos)
-            }
-        ]
-    };
-
-    // Tabla de productos más vendidos
+    // Productos más vendidos
     const topProductos = estadisticas.topProductos || [];
 
-    const metricCardStyle = {
-        backgroundColor: "#242424", 
-        padding: "20px",
-        borderRadius: "10px",
-        margin: "10px",
-        boxShadow: "0 4px 8px rgba(0 0 0 / 40%)",
-        textAlign: "center" as const,
-        minWidth: "200px"
-    };
+    // Tarjetas de métricas rápidas
+    const metricCards = [
+        {
+            icon: <FaUsers size={28} color={cardColors[0].color} />,
+            label: "Total de Usuarios",
+            value: estadisticas.totalUsuarios.toLocaleString(),
+            ...cardColors[0]
+        },
+        {
+            icon: <FaMoneyBillWave size={28} color={cardColors[1].color} />,
+            label: "Total de Ventas",
+            value: `$${estadisticas.totalVentas.toLocaleString()}`,
+            ...cardColors[1]
+        },
+        {
+            icon: <FaStore size={28} color={cardColors[2].color} />,
+            label: "Locales Activos",
+            value: estadisticas.localesActivos,
+            ...cardColors[2]
+        },
+        {
+            icon: <FaShoppingCart size={28} color={cardColors[3].color} />,
+            label: "Pedidos Totales",
+            value: pedidosPorEstado.reduce((acc, e) => acc + e._count._all, 0),
+            ...cardColors[3]
+        }
+    ];
 
     return (
-        <div style={{ padding: "20px" }}>
-            {/* Sección de métricas rápidas */}
-            <div style={{ 
-                display: "flex", 
-                justifyContent: "center", 
-                flexWrap: "wrap", 
-                marginBottom: "30px" 
+        <div style={{
+            padding: "32px 0",
+            background: "#F8FAFC",
+            minHeight: "100vh",
+            fontFamily: "Inter, Arial, sans-serif"
+        }}>
+            {/* Tarjetas de métricas rápidas */}
+            <div style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "32px",
+                flexWrap: "wrap",
+                marginBottom: "36px"
             }}>
-                <div style={metricCardStyle}>
-                    <h3>Total de Usuarios</h3>
-                    <p style={{ fontSize: "24px", fontWeight: "bold" }}>{estadisticas.totalUsuarios}</p>
-                </div>
-                <div style={metricCardStyle}>
-                    <h3>Total de Ventas</h3>
-                    <p style={{ fontSize: "24px", fontWeight: "bold" }}>${estadisticas.totalVentas.toLocaleString()}</p>
-                </div>
-                <div style={metricCardStyle}>
-                    <h3>Locales Activos</h3>
-                    <p style={{ fontSize: "24px", fontWeight: "bold" }}>{estadisticas.localesActivos}</p>
-                </div>
+                {metricCards.map((card, idx) => (
+                    <div key={idx} style={{
+                        background: card.bg,
+                        color: "#222",
+                        borderRadius: "16px",
+                        boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+                        padding: "28px 36px",
+                        minWidth: "220px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        transition: "box-shadow 0.2s",
+                        border: `1.5px solid ${card.color}22`
+                    }}>
+                        <div style={{ marginBottom: 12 }}>{card.icon}</div>
+                        <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>{card.label}</div>
+                        <div style={{ fontSize: 28, fontWeight: 700, color: card.color }}>{card.value}</div>
+                    </div>
+                ))}
             </div>
-            
-            {/* Sección de gráficos */}
-            <div style={{ 
-                display: "flex", 
-                flexDirection: "row", 
-                flexWrap: "wrap", 
-                justifyContent: "space-around",
-                gap: "20px"
+
+            {/* Gráficos */}
+            <div style={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                gap: "32px",
+                marginBottom: "36px"
             }}>
-                <div style={{ 
-                    flex: 1, 
-                    minWidth: "300px", 
-                    backgroundColor: "#242424", 
-                    padding: "20px", 
-                    borderRadius: "10px",
-                    boxShadow: "0 0px 8px rgb(0 0 0 / 40% )"
+                <div style={{
+                    background: "#fff",
+                    borderRadius: "16px",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+                    padding: "28px 24px",
+                    minWidth: "320px",
+                    flex: 1,
+                    maxWidth: 400
                 }}>
-                    <h3 style={{ textAlign: "center" }}>Distribución de Métricas</h3>
+                    <h3 style={{ textAlign: "center", marginBottom: 18, color: "#1976D2" }}>Distribución de Roles</h3>
                     <Chart type="doughnut" data={donutData} options={donutOptions} style={{ width: '100%' }} />
                 </div>
-                
-                <div style={{ 
-                    flex: 1, 
-                    minWidth: "500px",
-                    backgroundColor: "#242424",
-                    padding: "20px", 
-                    borderRadius: "10px",
-                    boxShadow: "0 0px 8px rgb(0 0 0 / 40%)",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "350px"
+                <div style={{
+                    background: "#fff",
+                    borderRadius: "16px",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+                    padding: "28px 24px",
+                    minWidth: "320px",
+                    flex: 1,
+                    maxWidth: 500
                 }}>
-                    <h3 style={{ textAlign: "center" }}>Top 5 Locatarios con más Productos</h3>
-                    <div style={{ width: "100%", height: "250px" }}>
-                        <Chart
-                            type="bar"
-                            data={productosLocatarioData}
-                            options={{
-                                indexAxis: 'y',
-                                plugins: { legend: { display: false } },
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: { beginAtZero: true, title: { display: true, text: 'Cantidad de Productos' } },
-                                    y: { title: { display: true, text: 'Locatario' } }
-                                }
-                            }}
-                            style={{ width: '100%', height: '100%' }}
-                        />
-                    </div>
+                    <h3 style={{ textAlign: "center", marginBottom: 18, color: "#43A047" }}>Comparación de Métricas</h3>
+                    <Chart type="bar" data={barData} options={barOptions} style={{ width: '100%' }} />
+                    <p style={{ textAlign: "center", fontStyle: "italic", marginTop: "10px", color: "#888" }}>
+                        Nota: Las ventas están representadas en miles para mejor visualización
+                    </p>
                 </div>
             </div>
 
             {/* Gráfico de pedidos por estado */}
             <div style={{
-                marginTop: "30px",
-                backgroundColor: "#242424",
-                padding: "20px",
-                borderRadius: "10px",
-                boxShadow: "0 0px 8px rgb(0 0 0 / 40%)",
-                minWidth: "300px"
+                margin: "0 auto 36px auto",
+                background: "#fff",
+                padding: "28px 24px",
+                borderRadius: "16px",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+                maxWidth: 600
             }}>
-                <h3 style={{ textAlign: "center" }}>Pedidos por Estado</h3>
+                <h3 style={{ textAlign: "center", color: "#1976D2" }}>Pedidos por Estado</h3>
                 <Chart type="bar" data={pedidosEstadoData} style={{ width: '100%' }} />
             </div>
 
             {/* Tabla de productos más vendidos */}
             <div style={{
-                marginTop: "30px",
-                backgroundColor: "#242424",
-                padding: "20px",
-                borderRadius: "10px",
-                boxShadow: "0 0px 8px rgb(0 0 0 / 40%)",
-                minWidth: "300px"
+                margin: "0 auto",
+                background: "#fff",
+                padding: "28px 24px",
+                borderRadius: "16px",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+                maxWidth: 600
             }}>
-                <h3 style={{ textAlign: "center" }}>Top 5 Productos Más Vendidos</h3>
-                <table style={{ width: "100%", color: "white", borderCollapse: "collapse" }}>
+                <h3 style={{ textAlign: "center", color: "#FFA726" }}>Top 5 Productos Más Vendidos</h3>
+                <table style={{
+                    width: "100%",
+                    color: "#222",
+                    borderCollapse: "collapse",
+                    fontSize: "16px"
+                }}>
                     <thead>
-                        <tr>
-                            <th style={{ borderBottom: "1px solid #666" }}>Producto</th>
-                            <th style={{ borderBottom: "1px solid #666" }}>Cantidad Vendida</th>
+                        <tr style={{ background: "#F5F7FA" }}>
+                            <th style={{ borderBottom: "2px solid #EEE", padding: "10px 0" }}>Producto</th>
+                            <th style={{ borderBottom: "2px solid #EEE", padding: "10px 0" }}>Cantidad Vendida</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {topProductos.map((prod, idx) => (
-                            <tr key={idx}>
-                                <td style={{ padding: "8px" }}>{prod.nombre}</td>
-                                <td style={{ padding: "8px", textAlign: "center" }}>{prod.cantidadVendida}</td>
+                        {topProductos.length === 0 ? (
+                            <tr>
+                                <td colSpan={2} style={{ textAlign: "center", padding: "16px", color: "#888" }}>
+                                    No hay datos disponibles
+                                </td>
                             </tr>
-                        ))}
+                        ) : (
+                            topProductos.map((prod, idx) => (
+                                <tr key={idx} style={{ background: idx % 2 === 0 ? "#FAFAFA" : "#FFF" }}>
+                                    <td style={{ padding: "10px 0 10px 8px" }}>{prod.nombre}</td>
+                                    <td style={{ padding: "10px 0", textAlign: "center", fontWeight: 600 }}>{prod.cantidadVendida}</td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>

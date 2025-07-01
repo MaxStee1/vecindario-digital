@@ -11,6 +11,7 @@ import UsersSection from "../components/admin/UsersSection";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import { FaChartBar, FaUserCog } from "react-icons/fa";
 
 const rolesDisponibles = [
     { label: "Administrador", value: "admin" },
@@ -45,7 +46,6 @@ const AdminPage = () => {
         rol: ''
     });
     const [showUsers, setShowUsers] = useState(false);
-    const [topLocatariosProductos, setTopLocatariosProductos] = useState([]);
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
@@ -53,7 +53,6 @@ const AdminPage = () => {
             try {
                 const usuarioRes = await api.get('/admin/users');
                 const stateRes = await api.get('/admin/metrics');
-                const topLocatariosRes = await api.get('/admin/top-locatarios-productos');
                 setUsuarios(usuarioRes.data);
                 setEstadisticas({
                     totalUsuarios: stateRes.data.totalUsuarios,
@@ -65,7 +64,6 @@ const AdminPage = () => {
                     pedidosPorEstado: stateRes.data.pedidosPorEstado,
                     topProductos: stateRes.data.topProductos,
                 });
-                setTopLocatariosProductos(topLocatariosRes.data);
             } catch (error) {
                 console.error("Error al obtener datos", error);
                 alert("Hubo un problema al cargar los datos. Por favor, intenta nuevamente.");
@@ -216,46 +214,75 @@ const AdminPage = () => {
     };
 
     return (
-        <div>
-            <header>
-                <h2 style={{ textAlign: "center", padding: "2rem" }}>Panel de administración</h2>
-                <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginBottom: "1rem" }}>
-                    <Button 
+        <div style={{ background: "#F8FAFC", minHeight: "100vh" }}>
+            <header style={{
+                background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+                padding: "2.5rem 0 1.5rem 0",
+                borderBottomLeftRadius: 32,
+                borderBottomRightRadius: 32,
+                boxShadow: "0 4px 24px rgba(25, 118, 210, 0.08)"
+            }}>
+                <h2 style={{
+                    textAlign: "center",
+                    color: "#fff",
+                    fontWeight: 800,
+                    fontSize: "2.5rem",
+                    letterSpacing: "1px",
+                    marginBottom: "1.2rem"
+                }}>
+                    Panel de Administración
+                </h2>
+                <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "1.5rem",
+                    marginBottom: "1.5rem"
+                }}>
+                    <Button
                         label="Ver Métricas"
-                        icon={() =><i className="pi pi-chart-bar" style={{color:"#ff6600", marginRight:"0.5rem"}} />}
-                        onClick={() => setShowUsers(false)} 
+                        icon={<FaChartBar style={{ color: "#fff", marginRight: 8 }} />}
+                        onClick={() => setShowUsers(false)}
                         className={!showUsers ? "p-button-primary" : ""}
+                        style={{
+                            background: !showUsers ? "#43A047" : "#fff",
+                            color: !showUsers ? "#fff" : "#1976D2",
+                            border: "none",
+                            borderRadius: 8,
+                            fontWeight: 600,
+                            fontSize: 16,
+                            boxShadow: !showUsers ? "0 2px 8px #43A04744" : "none"
+                        }}
                     />
-                    <Button 
-                        label="Administrar Usuarios" 
-                        icon={() =><i className="pi pi-user" style={{color:"#ff6600", marginRight:"0.5rem"}} />}
-                        onClick={() => setShowUsers(true)} 
+                    <Button
+                        label="Administrar Usuarios"
+                        icon={<FaUserCog style={{ color: "#fff", marginRight: 8 }} />}
+                        onClick={() => setShowUsers(true)}
                         className={showUsers ? "p-button-primary" : ""}
+                        style={{
+                            background: showUsers ? "#1976D2" : "#fff",
+                            color: showUsers ? "#fff" : "#43A047",
+                            border: "none",
+                            borderRadius: 8,
+                            fontWeight: 600,
+                            fontSize: 16,
+                            boxShadow: showUsers ? "0 2px 8px #1976D244" : "none"
+                        }}
                     />
                 </div>
-                <hr
-                    style={{
-                        border: "none",
-                        height: "2px",
-                        backgroundColor: "#ff6600",
-                        marginBottom: "20px",
-                        width: "80%",
-                    }}
-                />
             </header>
 
             <main className="adminMain" style={{ display: "flex", flexDirection: "column", placeItems: "center" }}>
                 <Toast ref={toast} />
-                
+
                 {!showUsers ? (
-                    <MetricsSection estadisticas={estadisticas} topLocatariosProductos={topLocatariosProductos} />
+                    <MetricsSection estadisticas={estadisticas} />
                 ) : (
-                    <UsersSection 
-                        usuarios={usuarios} 
-                        formatDate={formatDate} 
-                        openEditDialog={openEditDialog} 
-                        openDeleteDialog={openDeleteDialog} 
-                        setCreateDialogVisible={setCreateDialogVisible} 
+                    <UsersSection
+                        usuarios={usuarios}
+                        formatDate={formatDate}
+                        openEditDialog={openEditDialog}
+                        openDeleteDialog={openDeleteDialog}
+                        setCreateDialogVisible={setCreateDialogVisible}
                     />
                 )}
             </main>
@@ -265,7 +292,7 @@ const AdminPage = () => {
                 header="Crear Usuario"
                 closeIcon={<i className="pi pi-times" style={{ color: "red" }} />}
                 visible={createDialogVisible}
-                style={{ width: "50vw"}}
+                style={{ width: "50vw" }}
                 onHide={() => setCreateDialogVisible(false)}
                 footer={
                     <div>
@@ -365,10 +392,19 @@ const AdminPage = () => {
                 </div>
             </Dialog>
 
-            <footer style={{ placeItems: 'center', padding: "1rem", backgroundColor:"rgba(5% 5% 5% / 20%)", marginTop: "2rem" }} >
+            <footer style={{
+                placeItems: 'center',
+                padding: "1.5rem 0 0.5rem 0",
+                background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+                color: "#fff",
+                marginTop: "2rem",
+                borderTopLeftRadius: 32,
+                borderTopRightRadius: 32,
+                textAlign: "center"
+            }}>
                 <LogoutButton />
-                <p>&copy; {new Date().getFullYear()} Comercio Digital y Local</p>
-                <p>Todos los derechos reservados</p>
+                <p style={{ margin: "0.5rem 0 0 0" }}>&copy; {new Date().getFullYear()} Comercio Digital y Local</p>
+                <p style={{ margin: 0 }}>Todos los derechos reservados</p>
             </footer>
         </div>
     );

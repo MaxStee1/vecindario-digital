@@ -71,7 +71,7 @@ const ProductosPage: React.FC<ProductosPageProps> = ({ nombreTienda, toastRef })
     };
 
     const openEditDialog = (producto: Producto) => {
-        setSelectedProducto({...producto});
+        setSelectedProducto({ ...producto });
         setEditDialogVisible(true);
     };
 
@@ -87,7 +87,7 @@ const ProductosPage: React.FC<ProductosPageProps> = ({ nombreTienda, toastRef })
 
     const saveProducto = async () => {
         if (!selectedProducto) return;
-        
+
         try {
             await api.put(`/locatarios/productos/${selectedProducto.id}`, selectedProducto);
             showSuccess("Producto actualizado correctamente");
@@ -123,81 +123,134 @@ const ProductosPage: React.FC<ProductosPageProps> = ({ nombreTienda, toastRef })
     };
 
     const showSuccess = (message: string) => {
-        toastRef.current?.show({severity:'success', summary: 'Éxito', detail: message, life: 3000});
+        toastRef.current?.show({ severity: 'success', summary: 'Éxito', detail: message, life: 3000 });
     };
 
     const showError = (message: string) => {
-        toastRef.current?.show({severity:'error', summary: 'Error', detail: message, life: 3000});
+        toastRef.current?.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
     };
+
+    // --- ESTILOS ---
+    const cardStyle: React.CSSProperties = {
+        background: "#fff",
+        borderRadius: "16px",
+        boxShadow: "0 2px 12px rgba(25,118,210,0.08)",
+        padding: "28px 24px",
+        marginBottom: "24px",
+        width: "100%"
+    };
+
+    const actionButtonStyle = (color: string, grad?: boolean) => ({
+        background: grad
+            ? "linear-gradient(90deg, #1976D2 60%, #43A047 100%)"
+            : color,
+        color: "#fff",
+        border: "none",
+        borderRadius: 8,
+        padding: "8px 18px",
+        fontWeight: 600,
+        fontSize: 15,
+        cursor: "pointer",
+        boxShadow: "0 2px 8px #1976D244",
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        marginRight: 8
+    });
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3>Productos Disponibles</h3>
-                <Button 
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '24px'
+            }}>
+                <h2 style={{ color: "#1976D2", fontWeight: 700, margin: 0 }}>Productos Disponibles</h2>
+                <Button
                     label="Agregar Producto"
                     icon="pi pi-plus"
                     onClick={openCreateDialog}
+                    style={{
+                        background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+                        border: "none",
+                        borderRadius: 8,
+                        fontWeight: 700,
+                        fontSize: 16,
+                        color: "#fff",
+                        boxShadow: "0 2px 8px #1976D244"
+                    }}
                 />
             </div>
-            <DataTable value={productos} tableStyle={{ minWidth: "auto" }}>
-                <Column field="id" header="ID" sortable />
-                <Column field="nombre" header="Nombre" sortable />
-                <Column field="descripcion" header="Descripción" />
-                <Column field="precio" header="Precio" body={(rowData) => `$${rowData.precio}`} />
-                <Column field="stock" header="Stock" />
-                <Column 
-                    header="Calificacion Promedio" 
-                    body={(rowData: Producto) =>
-                        rowData.promedioCalificacion !== null && rowData.promedioCalificacion !== undefined
-                        ? rowData.promedioCalificacion.toFixed(1)
-                        : "Sin calificaciones"
-                    }
-                />
-                <Column
-                    header="Acciones"
-                    body={(rowData) => (
-                        <div>
-                            <Button
-                                label="Editar"
-                                className="p-button-warning"
-                                style={{ height:"3vh", color:"green" , marginRight: "10px" }}
-                                icon="pi pi-pencil"
-                                onClick={() => openEditDialog(rowData)}
-                            />
-                            <Button
-                                label="Eliminar"
-                                className="p-button-danger"
-                                style={{ height:"3vh", color:"red" }}
-                                icon="pi pi-trash"
-                                onClick={() => deleteProducto(rowData.id)}
-                            />
-                            <Button
-                                label="Ver valoraciones"
-                                className="p-button-info"
-                                style={{ height: "3vh"}}
-                                icon="pi pi-star"
-                                onClick={() => verValoraciones(rowData)}
-                            />
-                        </div>
-                    )}
-                />
-            </DataTable>
+            <div style={cardStyle}>
+                <DataTable value={productos} tableStyle={{ minWidth: "auto" }}>
+                    <Column field="id" header="ID" sortable style={{ width: 60, textAlign: "center" }} />
+                    <Column field="nombre" header="Nombre" sortable style={{ minWidth: 120 }} />
+                    <Column field="descripcion" header="Descripción" style={{ minWidth: 180 }} />
+                    <Column field="precio" header="Precio" body={(rowData) => `$${rowData.precio}`} style={{ minWidth: 100 }} />
+                    <Column field="stock" header="Stock" style={{ minWidth: 80 }} />
+                    <Column
+                        header="Calificación Promedio"
+                        body={(rowData: Producto) =>
+                            rowData.promedioCalificacion !== null && rowData.promedioCalificacion !== undefined
+                                ? rowData.promedioCalificacion.toFixed(1)
+                                : "Sin calificaciones"
+                        }
+                        style={{ minWidth: 120 }}
+                    />
+                    <Column
+                        header="Acciones"
+                        body={(rowData) => (
+                            <div style={{ display: "flex", gap: 8 }}>
+                                <Button
+                                    tooltip="Editar"
+                                    icon="pi pi-pencil"
+                                    style={actionButtonStyle("#1976D2", true)}
+                                    onClick={() => openEditDialog(rowData)}
+                                />
+                                <Button
+                                    tooltip="Eliminar"
+                                    icon="pi pi-trash"
+                                    style={actionButtonStyle("#E53935")}
+                                    onClick={() => deleteProducto(rowData.id)}
+                                />
+                                <Button
+                                    tooltip="Ver valoraciones"
+                                    icon="pi pi-star"
+                                    style={actionButtonStyle("#FFA726")}
+                                    onClick={() => verValoraciones(rowData)}
+                                />
+                            </div>
+                        )}
+                        style={{ minWidth: 180, textAlign: "center" }}
+                    />
+                </DataTable>
+            </div>
             {/* Mostrar valoraciones */}
             <Dialog
-                header={`Valoracion de "${productoValorado?.nombre}"`}
+                header={`Valoraciones de "${productoValorado?.nombre}"`}
                 closable={false}
                 visible={valoracionesDialogVisible}
                 style={{ width: "80%" }}
                 onHide={() => setValoracionesDialogVisible(false)}
                 footer={
-                    <Button label="Cerrar" icon="pi pi-times" onClick={() => setValoracionesDialogVisible(false)} />
+                    <Button
+                        label="Cerrar"
+                        icon="pi pi-times"
+                        onClick={() => setValoracionesDialogVisible(false)}
+                        style={{
+                            background: "#1976D2",
+                            border: "none",
+                            borderRadius: 8,
+                            color: "#fff"
+                        }}
+                    />
                 }
             >
                 {valoraciones.length === 0 ? (
                     <p>No hay valoraciones para este producto.</p>
                 ) : (
-                    <table style={{ width: "100%", textAlign:"center" }}>
+                    <table style={{ width: "100%", textAlign: "center" }}>
                         <thead>
                             <tr>
                                 <th>Calificación</th>
@@ -229,8 +282,31 @@ const ProductosPage: React.FC<ProductosPageProps> = ({ nombreTienda, toastRef })
                 onHide={() => setEditDialogVisible(false)}
                 footer={
                     <div>
-                        <Button label="Guardar" icon="pi pi-check" onClick={saveProducto} />
-                        <Button label="Cancelar" icon="pi pi-times" onClick={() => setEditDialogVisible(false)} />
+                        <Button
+                            label="Guardar"
+                            icon="pi pi-check"
+                            onClick={saveProducto}
+                            style={{
+                                background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+                                border: "none",
+                                borderRadius: 8,
+                                color: "#fff",
+                                fontWeight: 600
+                            }}
+                        />
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            onClick={() => setEditDialogVisible(false)}
+                            style={{
+                                marginLeft: 8,
+                                background: "#E3E7ED",
+                                border: "none",
+                                borderRadius: 8,
+                                color: "#1976D2",
+                                fontWeight: 600
+                            }}
+                        />
                     </div>
                 }
             >
@@ -268,7 +344,8 @@ const ProductosPage: React.FC<ProductosPageProps> = ({ nombreTienda, toastRef })
                                 currency="CLP"
                                 locale="es-CL"
                             />
-                        </div> <div className="p-field">
+                        </div>
+                        <div className="p-field">
                             <label htmlFor="stock">Stock</label>
                             <InputNumber
                                 id="stock"
@@ -290,8 +367,31 @@ const ProductosPage: React.FC<ProductosPageProps> = ({ nombreTienda, toastRef })
                 onHide={() => setCreateDialogVisible(false)}
                 footer={
                     <div>
-                        <Button label="Guardar" icon="pi pi-check" onClick={createProducto} />
-                        <Button label="Cancelar" icon="pi pi-times" onClick={() => setCreateDialogVisible(false)} />
+                        <Button
+                            label="Guardar"
+                            icon="pi pi-check"
+                            onClick={createProducto}
+                            style={{
+                                background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+                                border: "none",
+                                borderRadius: 8,
+                                color: "#fff",
+                                fontWeight: 600
+                            }}
+                        />
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            onClick={() => setCreateDialogVisible(false)}
+                            style={{
+                                marginLeft: 8,
+                                background: "#E3E7ED",
+                                border: "none",
+                                borderRadius: 8,
+                                color: "#1976D2",
+                                fontWeight: 600
+                            }}
+                        />
                     </div>
                 }
             >

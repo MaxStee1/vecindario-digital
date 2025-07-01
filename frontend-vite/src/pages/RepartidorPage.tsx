@@ -47,13 +47,16 @@ const RepartidorPage = () => {
   }, [repartidor]);
 
   const obtenerRepartidor = async () => {
-    try {
-      const res = await api.get("/repartidor/info");
-      setRepartidor(res.data);
-    } catch (error) {
-      showError("No se pudo obtener el repartidor autenticado.");
-    }
-  };
+  try {
+    const res = await api.get("/repartidor/info");
+    setRepartidor({
+      id: res.data.id,
+      nombre: res.data.usuario.nombre // <-- aquí se toma el nombre correctamente
+    });
+  } catch (error) {
+    showError("No se pudo obtener el repartidor autenticado.");
+  }
+};
 
   const obtenerPedidosPendientes = async () => {
     try {
@@ -107,30 +110,53 @@ const RepartidorPage = () => {
   };
 
   return (
-    <div>
-      <header>
-        <h2 style={{ textAlign: "center", padding: "2rem" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(120deg, #F8FAFC 60%, #E3F2FD 100%)",
+        fontFamily: "Inter, Arial, sans-serif",
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      {/* HEADER CON FONDO DEGRADADO */}
+      <header
+        style={{
+          background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+          borderBottomLeftRadius: 32,
+          borderBottomRightRadius: 32,
+          boxShadow: "0 4px 24px rgba(25, 118, 210, 0.08)",
+          padding: "2.5rem 0 1.5rem 0",
+          marginBottom: 24,
+          textAlign: "center"
+        }}
+      >
+        <h2 style={{
+          color: "#fff",
+          fontWeight: 800,
+          fontSize: "2.2rem",
+          margin: 0,
+          letterSpacing: "1px"
+        }}>
           Panel de <strong>Repartidor</strong>
         </h2>
-        <p style={{ textAlign: "center", marginTop: "-1.5rem", marginBottom: "1.5rem" }}>
+        <p style={{
+          color: "#fff",
+          fontWeight: 500,
+          fontSize: "1.1rem",
+          margin: 0,
+          marginTop: 8
+        }}>
           Bienvenido, <strong>{repartidor?.nombre || "..."}</strong>
         </p>
-        <hr
-          style={{
-            border: "none",
-            height: "2px",
-            backgroundColor: "#ff6600",
-            marginBottom: "20px",
-            width: "80%",
-          }}
-        />
       </header>
+      {/* FIN HEADER */}
 
       <main style={{ display: "flex", flexDirection: "column", placeItems: "center" }}>
         <Toast ref={toast} />
-        <div style={{ width: "100%", maxWidth: "1000px"}}>
+        <div style={{ width: "100%", maxWidth: "1000px" }}>
           <TabView
-            style={{ borderRadius:"10px", placeItems:"center", marginBottom:"15px"}}
+            style={{ borderRadius: "10px", placeItems: "center", marginBottom: "15px" }}
             activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}>
             <TabPanel header="Pedidos Pendientes" leftIcon="pi pi-clock mr-2">
               <Card>
@@ -174,7 +200,7 @@ const RepartidorPage = () => {
               </Card>
             </TabPanel>
             <TabPanel header="Mi Pedido Asignado" leftIcon="pi pi-truck mr-2">
-              <Card style={{ placeItems:"center"}}>
+              <Card style={{ placeItems: "center" }}>
                 {!pedidoAsignado ? (
                   <p style={{ color: "gray" }}>No tienes pedidos asignados actualmente.</p>
                 ) : (
@@ -208,10 +234,25 @@ const RepartidorPage = () => {
         </div>
       </main>
 
-      <footer style={{ placeItems: 'center', padding: "1rem", backgroundColor: "rgba(5% 5% 5% / 20%)", marginTop: "2rem", textAlign: "center" }}>
+      <footer
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: "linear-gradient(90deg, #1976D2 60%, #43A047 100%)",
+          color: "#fff",
+          borderTopLeftRadius: 32,
+          borderTopRightRadius: 32,
+          width: "100%",
+          padding: "1.2rem 0 0.5rem 0",
+          textAlign: "center",
+          marginTop: "2rem"
+        }}
+      >
         <LogoutButton />
-        <p>&copy; {new Date().getFullYear()} Comercio Digital y Local</p>
-        <p>Todos los derechos reservados</p>
+        <p style={{ margin: 0 }}>&copy; {new Date().getFullYear()} Comercio Digital y Local</p>
+        <p style={{ margin: 0 }}>Todos los derechos reservados</p>
       </footer>
     </div>
   );
