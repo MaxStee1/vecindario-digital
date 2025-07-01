@@ -1,5 +1,11 @@
 {
-  "dependencies": {
-    "@nestjs/mapped-types": "^2.1.0"
+  "name": "vecindario-digital-root",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"cd backend && npm run start:dev\" \"cd frontend-vite && npm run dev\"",
+    "setup": "./setup.sh"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

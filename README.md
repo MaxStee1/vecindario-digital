@@ -16,40 +16,52 @@ Proyecto de comercio digital y local para comunidades, desarrollado con **NestJS
 - Node.js >= 18
 - PostgreSQL >= 13
 
-## Instalación Rápida
+## Instalación rápida
 
 1. Clona el repositorio:
-   ```bash
+   ```sh
    git clone https://github.com/MaxStee1/vecindario-digital.git
    cd vecindario-digital
    ```
 
-2. Instala dependencias:
-   ```bash
-   cd backend
-   npm install
-   cd ../frontend-vite
-   npm install
+2. Ejecuta el script de instalación:
+   ```sh
+   npm run setup
    ```
 
-3. Configura la base de datos y variables de entorno en [backend/.env](backend/.env).
+   > El script instalará dependencias, pedirá que configures el archivo `backend/.env`, aplicará migraciones y cargará datos de prueba.
 
-4. Aplica migraciones y datos de prueba:
-   ```bash
-   cd backend
-   npx prisma migrate dev --name init
-   npm run seed
+3. Inicia ambos servidores:
+   ```sh
+   npm run dev
+   ```
+   Esto levanta frontend y backend a la vez.
+
+   O si prefieres iniciar por separado:
+   ```sh
+   cd backend && npm run start:dev
+   # en otra terminal
+   cd frontend-vite && npm run dev
    ```
 
-5. Inicia ambos servidores:
-   - Backend: `npm run start:dev` (puerto 3001)
-   - Frontend: `npm run dev` (puerto 5173)
-
-6. Accede a la app en [http://localhost:5173](http://localhost:5173)
-
-## Documentación
-
-- [backend/README.md](backend/README.md)
-- [frontend-vite/README.md](frontend-vite/README.md)
+4. Accede a la aplicación en [http://localhost:5173](http://localhost:5173)
 
 ---
+
+## Requisitos
+
+- Node.js >= 18
+- npm >= 9
+- Docker (opcional, para base de datos)
+
+---
+
+## Scripts útiles
+
+- `./setup.sh` : Automatiza la instalación y preparación inicial.
+- `npm run dev` : Inicia frontend y backend juntos usando `concurrently`.
+
+## Subproyectos
+
+- [Backend (NestJS)](backend/README.md)
+- [Frontend (Vite + React)](frontend-vite/README.md)
